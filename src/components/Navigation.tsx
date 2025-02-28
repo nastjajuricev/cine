@@ -21,7 +21,7 @@ const Navigation = () => {
             aria-label="Add Film"
           >
             <Plus 
-              className={cn("nav-icon", isActive('/add-film') && "nav-icon-active")} 
+              className={cn("nav-icon text-white", isActive('/add-film') && "text-filmora-coral")} 
               strokeWidth={2.5} 
             />
           </Link>
@@ -32,7 +32,7 @@ const Navigation = () => {
             aria-label="Search"
           >
             <Search 
-              className={cn("nav-icon", isActive('/search') && "nav-icon-active")} 
+              className={cn("nav-icon text-white", isActive('/search') && "text-filmora-coral")} 
               strokeWidth={2.5} 
             />
           </Link>
@@ -43,7 +43,7 @@ const Navigation = () => {
             aria-label="Home"
           >
             <div className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center bg-white", 
+              "w-10 h-10 rounded-full flex items-center justify-center", 
               isActive('/') ? "bg-filmora-coral" : "bg-white"
             )}>
               <FilmoraLogo size={24} />
@@ -56,7 +56,7 @@ const Navigation = () => {
             aria-label="Library"
           >
             <Film 
-              className={cn("nav-icon", isActive('/library') && "nav-icon-active")} 
+              className={cn("nav-icon text-white", isActive('/library') && "text-filmora-coral")} 
               strokeWidth={2.5} 
             />
           </Link>

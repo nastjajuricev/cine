@@ -14,8 +14,14 @@ const Index = () => {
   const [recentFilms, setRecentFilms] = useState<Film[]>([]);
   const [recentSearches, setRecentSearches] = useState<SearchHistory[]>([]);
   const navigate = useNavigate();
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  
+  // Scroll states for recent films
+  const [canScrollLeftFilms, setCanScrollLeftFilms] = useState(false);
+  const [canScrollRightFilms, setCanScrollRightFilms] = useState(false);
+  
+  // Scroll states for recent searches
+  const [canScrollLeftSearches, setCanScrollLeftSearches] = useState(false);
+  const [canScrollRightSearches, setCanScrollRightSearches] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -35,39 +41,70 @@ const Index = () => {
     toast.success('Data refreshed');
   };
 
-  // Scroll functions for horizontal scrolling
-  const scrollLeft = () => {
+  // Scroll functions for films container
+  const scrollLeftFilms = () => {
     const container = document.getElementById('recent-films-container');
     if (container) {
       container.scrollBy({ left: -300, behavior: 'smooth' });
     }
   };
 
-  const scrollRight = () => {
+  const scrollRightFilms = () => {
     const container = document.getElementById('recent-films-container');
     if (container) {
       container.scrollBy({ left: 300, behavior: 'smooth' });
     }
   };
 
-  // Check scroll position to show/hide arrows
-  const checkScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  // Scroll functions for searches container
+  const scrollLeftSearches = () => {
+    const container = document.getElementById('recent-searches-container');
+    if (container) {
+      container.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRightSearches = () => {
+    const container = document.getElementById('recent-searches-container');
+    if (container) {
+      container.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
+  // Check scroll position for films container
+  const checkScrollFilms = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
-    setCanScrollLeft(target.scrollLeft > 0);
-    setCanScrollRight(
+    setCanScrollLeftFilms(target.scrollLeft > 0);
+    setCanScrollRightFilms(
       target.scrollLeft < target.scrollWidth - target.clientWidth - 5
     );
   };
 
-  // Set initial scroll state when component loads
+  // Check scroll position for searches container
+  const checkScrollSearches = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    setCanScrollLeftSearches(target.scrollLeft > 0);
+    setCanScrollRightSearches(
+      target.scrollLeft < target.scrollWidth - target.clientWidth - 5
+    );
+  };
+
+  // Set initial scroll states when component loads
   useEffect(() => {
-    const container = document.getElementById('recent-films-container');
-    if (container) {
-      setCanScrollRight(
-        container.scrollWidth > container.clientWidth
+    const filmsContainer = document.getElementById('recent-films-container');
+    if (filmsContainer) {
+      setCanScrollRightFilms(
+        filmsContainer.scrollWidth > filmsContainer.clientWidth
       );
     }
-  }, [recentFilms]);
+
+    const searchesContainer = document.getElementById('recent-searches-container');
+    if (searchesContainer) {
+      setCanScrollRightSearches(
+        searchesContainer.scrollWidth > searchesContainer.clientWidth
+      );
+    }
+  }, [recentFilms, recentSearches]);
 
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
@@ -87,26 +124,59 @@ const Index = () => {
           <SearchBar onSearch={handleSearch} placeholder="Search for films..." />
         </div>
 
-        {/* Recent Searches */}
+        {/* Recent Searches - with horizontal scroll */}
         {recentSearches.length > 0 && (
-          <section className="mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <h2 className="text-2xl font-bold mb-4">Last {recentSearches.length} searches</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-              {recentSearches.map((search, index) => (
-                <Link 
-                  key={search.id} 
-                  to={`/search?q=${encodeURIComponent(search.term)}`}
-                  className="filmora-card bg-filmora-light-pink p-4 hover:shadow-md transition-all"
-                  style={{ animationDelay: `${0.1 * index}s` }}
+          <section className="mb-8 animate-slide-up relative" style={{ animationDelay: '0.2s' }}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Last {recentSearches.length} searches</h2>
+            </div>
+            
+            <div className="relative group">
+              {/* Left scroll button */}
+              {canScrollLeftSearches && (
+                <button 
+                  onClick={scrollLeftSearches} 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 opacity-80 hover:opacity-100 transition-opacity"
+                  aria-label="Scroll left"
                 >
-                  <p className="text-center font-medium line-clamp-1">
-                    {search.term}
-                  </p>
-                  <p className="text-center text-sm text-gray-600 mt-1">
-                    {search.resultCount} results
-                  </p>
-                </Link>
-              ))}
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+              )}
+              
+              {/* Right scroll button */}
+              {canScrollRightSearches && (
+                <button 
+                  onClick={scrollRightSearches} 
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 opacity-80 hover:opacity-100 transition-opacity"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              )}
+              
+              {/* Horizontal scrolling container */}
+              <div 
+                id="recent-searches-container"
+                className="flex overflow-x-auto pb-4 gap-4 px-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                onScroll={checkScrollSearches}
+              >
+                {recentSearches.map((search, index) => (
+                  <div key={search.id} className="flex-shrink-0 w-[180px]">
+                    <Link 
+                      to={`/search?q=${encodeURIComponent(search.term)}`}
+                      className="filmora-card bg-filmora-light-pink p-4 hover:shadow-md transition-all block"
+                      style={{ animationDelay: `${0.1 * index}s` }}
+                    >
+                      <p className="text-center font-medium line-clamp-1">
+                        {search.term}
+                      </p>
+                      <p className="text-center text-sm text-gray-600 mt-1">
+                        {search.resultCount} results
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         )}
@@ -120,9 +190,9 @@ const Index = () => {
             
             <div className="relative group">
               {/* Left scroll button */}
-              {canScrollLeft && (
+              {canScrollLeftFilms && (
                 <button 
-                  onClick={scrollLeft} 
+                  onClick={scrollLeftFilms} 
                   className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 opacity-80 hover:opacity-100 transition-opacity"
                   aria-label="Scroll left"
                 >
@@ -131,9 +201,9 @@ const Index = () => {
               )}
               
               {/* Right scroll button */}
-              {canScrollRight && (
+              {canScrollRightFilms && (
                 <button 
-                  onClick={scrollRight} 
+                  onClick={scrollRightFilms} 
                   className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 opacity-80 hover:opacity-100 transition-opacity"
                   aria-label="Scroll right"
                 >
@@ -145,7 +215,7 @@ const Index = () => {
               <div 
                 id="recent-films-container"
                 className="flex overflow-x-auto pb-4 gap-4 px-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
-                onScroll={checkScroll}
+                onScroll={checkScrollFilms}
               >
                 {recentFilms.map((film) => (
                   <div key={film.id} className="flex-shrink-0 w-[200px]">

@@ -8,11 +8,14 @@ import FilmCard from '@/components/FilmCard';
 import { Film, SearchHistory } from '@/types/film';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Index = () => {
   const [recentFilms, setRecentFilms] = useState<Film[]>([]);
   const [recentSearches, setRecentSearches] = useState<SearchHistory[]>([]);
   const navigate = useNavigate();
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -31,6 +34,40 @@ const Index = () => {
     loadData();
     toast.success('Data refreshed');
   };
+
+  // Scroll functions for horizontal scrolling
+  const scrollLeft = () => {
+    const container = document.getElementById('recent-films-container');
+    if (container) {
+      container.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    const container = document.getElementById('recent-films-container');
+    if (container) {
+      container.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
+  // Check scroll position to show/hide arrows
+  const checkScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    setCanScrollLeft(target.scrollLeft > 0);
+    setCanScrollRight(
+      target.scrollLeft < target.scrollWidth - target.clientWidth - 5
+    );
+  };
+
+  // Set initial scroll state when component loads
+  useEffect(() => {
+    const container = document.getElementById('recent-films-container');
+    if (container) {
+      setCanScrollRight(
+        container.scrollWidth > container.clientWidth
+      );
+    }
+  }, [recentFilms]);
 
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
@@ -74,19 +111,52 @@ const Index = () => {
           </section>
         )}
 
-        {/* Recently Added Films */}
+        {/* Recently Added Films - with horizontal scroll */}
         {recentFilms.length > 0 && (
-          <section className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
-            <h2 className="text-2xl font-bold mb-4">Last {recentFilms.length} added</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-              {recentFilms.map((film, index) => (
-                <FilmCard 
-                  key={film.id} 
-                  film={film} 
-                  variant="recent" 
-                  onFilmUpdated={handleRefresh}
-                />
-              ))}
+          <section className="animate-slide-up relative" style={{ animationDelay: '0.3s' }}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Last {recentFilms.length} added</h2>
+            </div>
+            
+            <div className="relative group">
+              {/* Left scroll button */}
+              {canScrollLeft && (
+                <button 
+                  onClick={scrollLeft} 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 opacity-80 hover:opacity-100 transition-opacity"
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+              )}
+              
+              {/* Right scroll button */}
+              {canScrollRight && (
+                <button 
+                  onClick={scrollRight} 
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 opacity-80 hover:opacity-100 transition-opacity"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              )}
+              
+              {/* Horizontal scrolling container */}
+              <div 
+                id="recent-films-container"
+                className="flex overflow-x-auto pb-4 gap-4 px-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                onScroll={checkScroll}
+              >
+                {recentFilms.map((film) => (
+                  <div key={film.id} className="flex-shrink-0 w-[200px]">
+                    <FilmCard 
+                      film={film} 
+                      variant="recent" 
+                      onFilmUpdated={handleRefresh}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         )}

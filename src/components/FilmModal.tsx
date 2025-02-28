@@ -86,7 +86,7 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div 
-        className="modal-content max-h-[90vh] overflow-y-auto"
+        className="modal-content max-h-[90vh] overflow-y-auto overflow-x-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {isEditing ? (
@@ -181,140 +181,143 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
           )}
         </div>
 
-        {/* Title and ID */}
-        <div className="mb-5">
-          {isEditing ? (
-            <input
-              type="text"
-              name="title"
-              value={editedFilm.title}
-              onChange={handleInputChange}
-              placeholder="Film Title"
-              className="w-full text-2xl font-bold mb-2 p-2 border-b focus:outline-none focus:border-filmora-coral"
-            />
-          ) : (
-            <h2 className="text-2xl font-bold mb-2">{film.title}</h2>
-          )}
-          
-          <div className="flex items-center">
-            <span className="text-gray-500 mr-2">ID:</span>
+        {/* Scrollable content container */}
+        <div className="overflow-x-auto">
+          {/* Title and ID */}
+          <div className="mb-5 min-w-full">
             {isEditing ? (
               <input
                 type="text"
-                name="idNumber"
-                value={editedFilm.idNumber}
+                name="title"
+                value={editedFilm.title}
                 onChange={handleInputChange}
-                placeholder="ID Number"
-                className="p-1 border-b focus:outline-none focus:border-filmora-coral"
+                placeholder="Film Title"
+                className="w-full text-2xl font-bold mb-2 p-2 border-b focus:outline-none focus:border-filmora-coral"
               />
             ) : (
-              <span>{film.idNumber}</span>
+              <h2 className="text-2xl font-bold mb-2">{film.title}</h2>
             )}
-          </div>
-        </div>
-
-        {/* Details */}
-        <div className="space-y-4 mb-6">
-          <div>
-            <label className="block text-gray-500 text-sm mb-1">Director</label>
-            {isEditing ? (
-              <input
-                type="text"
-                name="director"
-                value={editedFilm.director}
-                onChange={handleInputChange}
-                placeholder="Director"
-                className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
-              />
-            ) : (
-              <p>{film.director}</p>
-            )}
+            
+            <div className="flex items-center">
+              <span className="text-gray-500 mr-2">ID:</span>
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="idNumber"
+                  value={editedFilm.idNumber}
+                  onChange={handleInputChange}
+                  placeholder="ID Number"
+                  className="p-1 border-b focus:outline-none focus:border-filmora-coral"
+                />
+              ) : (
+                <span>{film.idNumber}</span>
+              )}
+            </div>
           </div>
 
-          <div>
-            <label className="block text-gray-500 text-sm mb-1">Year</label>
-            {isEditing ? (
-              <input
-                type="text"
-                name="year"
-                value={editedFilm.year || ''}
-                onChange={handleInputChange}
-                placeholder="Year"
-                className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
-              />
-            ) : (
-              <p>{film.year || 'Not specified'}</p>
-            )}
-          </div>
+          {/* Details */}
+          <div className="space-y-4 mb-6 min-w-full">
+            <div>
+              <label className="block text-gray-500 text-sm mb-1">Director</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="director"
+                  value={editedFilm.director}
+                  onChange={handleInputChange}
+                  placeholder="Director"
+                  className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
+                />
+              ) : (
+                <p className="break-words">{film.director}</p>
+              )}
+            </div>
 
-          <div>
-            <label className="block text-gray-500 text-sm mb-1">Producer</label>
-            {isEditing ? (
-              <input
-                type="text"
-                name="producer"
-                value={editedFilm.producer || ''}
-                onChange={handleInputChange}
-                placeholder="Producer"
-                className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
-              />
-            ) : (
-              <p>{film.producer || 'Not specified'}</p>
-            )}
-          </div>
+            <div>
+              <label className="block text-gray-500 text-sm mb-1">Year</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="year"
+                  value={editedFilm.year || ''}
+                  onChange={handleInputChange}
+                  placeholder="Year"
+                  className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
+                />
+              ) : (
+                <p>{film.year || 'Not specified'}</p>
+              )}
+            </div>
 
-          <div>
-            <label className="block text-gray-500 text-sm mb-1">Actors</label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedFilm.actors?.join(', ') || ''}
-                onChange={(e) => handleArrayInputChange(e, 'actors')}
-                placeholder="Actors (comma separated)"
-                className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
-              />
-            ) : (
-              <p>{film.actors?.join(', ') || 'Not specified'}</p>
-            )}
-          </div>
+            <div>
+              <label className="block text-gray-500 text-sm mb-1">Producer</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="producer"
+                  value={editedFilm.producer || ''}
+                  onChange={handleInputChange}
+                  placeholder="Producer"
+                  className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
+                />
+              ) : (
+                <p className="break-words">{film.producer || 'Not specified'}</p>
+              )}
+            </div>
 
-          <div>
-            <label className="block text-gray-500 text-sm mb-1">Genres</label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedFilm.genre?.join(', ') || ''}
-                onChange={(e) => handleArrayInputChange(e, 'genre')}
-                placeholder="Genres (comma separated)"
-                className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
-              />
-            ) : (
-              <p>{film.genre?.join(', ') || 'Not specified'}</p>
-            )}
-          </div>
+            <div>
+              <label className="block text-gray-500 text-sm mb-1">Actors</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedFilm.actors?.join(', ') || ''}
+                  onChange={(e) => handleArrayInputChange(e, 'actors')}
+                  placeholder="Actors (comma separated)"
+                  className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
+                />
+              ) : (
+                <p className="break-words">{film.actors?.join(', ') || 'Not specified'}</p>
+              )}
+            </div>
 
-          <div>
-            <label className="block text-gray-500 text-sm mb-1">Tags</label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedFilm.tags?.join(', ') || ''}
-                onChange={(e) => handleArrayInputChange(e, 'tags')}
-                placeholder="Tags (comma separated)"
-                className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
-              />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {film.tags?.map(tag => (
-                  <span 
-                    key={tag} 
-                    className="bg-gray-100 px-2 py-1 rounded-full text-sm"
-                  >
-                    {tag}
-                  </span>
-                )) || 'No tags'}
-              </div>
-            )}
+            <div>
+              <label className="block text-gray-500 text-sm mb-1">Genres</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedFilm.genre?.join(', ') || ''}
+                  onChange={(e) => handleArrayInputChange(e, 'genre')}
+                  placeholder="Genres (comma separated)"
+                  className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
+                />
+              ) : (
+                <p className="break-words">{film.genre?.join(', ') || 'Not specified'}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-gray-500 text-sm mb-1">Tags</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedFilm.tags?.join(', ') || ''}
+                  onChange={(e) => handleArrayInputChange(e, 'tags')}
+                  placeholder="Tags (comma separated)"
+                  className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
+                />
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {film.tags?.map(tag => (
+                    <span 
+                      key={tag} 
+                      className="bg-gray-100 px-2 py-1 rounded-full text-sm"
+                    >
+                      {tag}
+                    </span>
+                  )) || 'No tags'}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

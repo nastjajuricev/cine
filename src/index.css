@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,7 +33,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.8rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -98,4 +99,117 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer components {
+  .filmora-button {
+    @apply relative px-6 py-3 rounded-3xl font-medium text-lg transition-all duration-300 overflow-hidden;
+  }
+
+  .filmora-button-primary {
+    @apply filmora-button bg-filmora-black text-filmora-white hover:bg-opacity-80;
+  }
+
+  .filmora-button-secondary {
+    @apply filmora-button bg-transparent text-filmora-black border-2 border-filmora-black hover:bg-filmora-black hover:text-filmora-white;
+  }
+
+  .filmora-card {
+    @apply rounded-3xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md;
+  }
+
+  .filmora-input {
+    @apply w-full px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-filmora-coral;
+  }
+
+  .nav-icon {
+    @apply w-7 h-7 transition-all duration-200;
+  }
+
+  .nav-icon-active {
+    @apply text-filmora-coral;
+  }
+}
+
+/* Custom transition classes */
+.fade-enter {
+  opacity: 0;
+  transform: scale(0.97);
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms, transform 300ms;
+}
+.fade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+.fade-exit-active {
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms, transform 400ms;
+}
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Modal animations */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  @apply bg-white rounded-3xl p-6 max-w-md w-full mx-4 shadow-xl;
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.90); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
 }

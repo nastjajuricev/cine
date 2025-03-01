@@ -100,7 +100,7 @@ const AddFilm = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
+    <div className="min-h-screen pb-24 pt-6 px-4 mx-auto">
       <div className="mb-6 flex items-center">
         <button 
           onClick={() => navigate(-1)}
@@ -109,69 +109,14 @@ const AddFilm = () => {
           <ArrowLeft className="w-5 h-5 mr-1" />
           <span>Back</span>
         </button>
-        <h1 className="text-2xl font-bold">Add New Film</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
-        {/* Image Upload Section */}
-        <div className="aspect-video relative rounded-xl overflow-hidden bg-gray-100 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center">
-          {imagePreview || imageUrl ? (
-            <div className="w-full h-full relative">
-              <img
-                src={imagePreview || imageUrl}
-                alt="Film preview"
-                className="w-full h-full object-cover"
-                onError={() => {
-                  toast.error('Invalid image URL');
-                  setImageUrl('');
-                }}
-              />
-              <button
-                type="button"
-                onClick={clearImage}
-                className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          ) : (
-            <>
-              <Camera className="w-8 h-8 text-gray-400 mb-3" />
-              <p className="text-gray-500 mb-2">Add a film poster or image</p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={triggerFileInput}
-                  className="filmora-button-primary text-sm py-2"
-                >
-                  Upload Image
-                </button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <span className="text-center text-gray-500">or</span>
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={handleUrlImageChange}
-                  placeholder="Paste image URL"
-                  className="filmora-input text-sm py-2"
-                />
-              </div>
-            </>
-          )}
-        </div>
+      <div className="max-w-md mx-auto bg-white rounded-3xl border border-red-300 p-6 shadow-sm animate-fade-in">
+        <h1 className="text-3xl font-bold mb-6">Add film</h1>
 
-        {/* Required Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Title Field */}
           <div>
-            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-              Title <span className="text-red-500">*</span>
-            </label>
             <input
               type="text"
               id="title"
@@ -179,137 +124,170 @@ const AddFilm = () => {
               value={film.title || ''}
               onChange={handleInputChange}
               required
-              className="filmora-input"
-              placeholder="Enter film title"
+              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+              placeholder="Film Title"
             />
           </div>
 
+          {/* Director Field */}
           <div>
-            <label htmlFor="idNumber" className="block text-gray-700 font-medium mb-2">
-              ID Number <span className="text-red-500">*</span>
-            </label>
             <input
               type="text"
-              id="idNumber"
-              name="idNumber"
-              value={film.idNumber || ''}
+              id="director"
+              name="director"
+              value={film.director || ''}
               onChange={handleInputChange}
               required
-              className="filmora-input"
-              placeholder="Enter unique ID number"
+              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+              placeholder="Director"
             />
           </div>
-        </div>
 
-        <div>
-          <label htmlFor="director" className="block text-gray-700 font-medium mb-2">
-            Director <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="director"
-            name="director"
-            value={film.director || ''}
-            onChange={handleInputChange}
-            required
-            className="filmora-input"
-            placeholder="Enter director name"
-          />
-        </div>
-
-        {/* Optional Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Actors Field */}
           <div>
-            <label htmlFor="year" className="block text-gray-700 font-medium mb-2">
-              Year
-            </label>
             <input
               type="text"
-              id="year"
-              name="year"
-              value={film.year || ''}
-              onChange={handleInputChange}
-              className="filmora-input"
-              placeholder="Enter release year"
+              id="actors"
+              value={actorsInput}
+              onChange={(e) => {
+                setActorsInput(e.target.value);
+                setFilm({ ...film, actors: parseCommaSeparatedValues(e.target.value) });
+              }}
+              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+              placeholder="Actor"
             />
           </div>
 
-          <div>
-            <label htmlFor="producer" className="block text-gray-700 font-medium mb-2">
-              Producer
-            </label>
-            <input
-              type="text"
-              id="producer"
-              name="producer"
-              value={film.producer || ''}
-              onChange={handleInputChange}
-              className="filmora-input"
-              placeholder="Enter producer name"
-            />
+          {/* Two-column layout for Genre and ID */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <input
+                type="text"
+                id="genre"
+                value={genreInput}
+                onChange={(e) => {
+                  setGenreInput(e.target.value);
+                  setFilm({ ...film, genre: parseCommaSeparatedValues(e.target.value) });
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                placeholder="Genre"
+              />
+            </div>
+
+            <div>
+              <input
+                type="text"
+                id="idNumber"
+                name="idNumber"
+                value={film.idNumber || ''}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                placeholder="ID number"
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label htmlFor="actors" className="block text-gray-700 font-medium mb-2">
-            Actors (comma separated)
-          </label>
-          <input
-            type="text"
-            id="actors"
-            value={actorsInput}
-            onChange={(e) => {
-              setActorsInput(e.target.value);
-              setFilm({ ...film, actors: parseCommaSeparatedValues(e.target.value) });
-            }}
-            className="filmora-input"
-            placeholder="E.g. Tom Hanks, Meryl Streep, Leonardo DiCaprio"
-          />
-        </div>
+          {/* Two-column layout for Tags and Year */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <input
+                type="text"
+                id="tags"
+                value={tagsInput}
+                onChange={(e) => {
+                  setTagsInput(e.target.value);
+                  setFilm({ ...film, tags: parseCommaSeparatedValues(e.target.value) });
+                }}
+                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                placeholder="Tags"
+              />
+            </div>
 
-        <div>
-          <label htmlFor="genre" className="block text-gray-700 font-medium mb-2">
-            Genres (comma separated)
-          </label>
-          <input
-            type="text"
-            id="genre"
-            value={genreInput}
-            onChange={(e) => {
-              setGenreInput(e.target.value);
-              setFilm({ ...film, genre: parseCommaSeparatedValues(e.target.value) });
-            }}
-            className="filmora-input"
-            placeholder="E.g. Drama, Comedy, Sci-Fi"
-          />
-        </div>
+            <div>
+              <input
+                type="text"
+                id="year"
+                name="year"
+                value={film.year || ''}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                placeholder="Year"
+              />
+            </div>
+          </div>
 
-        <div>
-          <label htmlFor="tags" className="block text-gray-700 font-medium mb-2">
-            Tags (comma separated)
-          </label>
-          <input
-            type="text"
-            id="tags"
-            value={tagsInput}
-            onChange={(e) => {
-              setTagsInput(e.target.value);
-              setFilm({ ...film, tags: parseCommaSeparatedValues(e.target.value) });
-            }}
-            className="filmora-input"
-            placeholder="E.g. oscar-winner, 90s, classic"
-          />
-        </div>
-
-        <div className="pt-4">
-          <button
-            type="submit"
-            className="filmora-button-primary w-full"
+          {/* Image Upload Area */}
+          <div 
+            className="border-2 border-gray-300 border-dashed rounded-3xl p-6 mt-4 flex flex-col items-center justify-center cursor-pointer"
+            onClick={triggerFileInput}
           >
-            Add Film
-          </button>
-        </div>
-      </form>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
+            
+            {imagePreview || imageUrl ? (
+              <div className="w-full relative">
+                <img
+                  src={imagePreview || imageUrl}
+                  alt="Film preview"
+                  className="w-full h-32 object-cover rounded-lg"
+                  onError={() => {
+                    toast.error('Invalid image URL');
+                    setImageUrl('');
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearImage();
+                  }}
+                  className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-gray-500 mb-2">Drag & drop for upload</p>
+              </div>
+            )}
+          </div>
+
+          {/* URL Input */}
+          <div>
+            <input
+              type="text"
+              value={imageUrl}
+              onChange={handleUrlImageChange}
+              placeholder="Upload image via URL"
+              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-4 py-3 bg-filmora-coral text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-3 bg-filmora-coral text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+            >
+              Add film
+            </button>
+          </div>
+        </form>
+      </div>
 
       <Navigation />
     </div>

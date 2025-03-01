@@ -4,8 +4,8 @@ import { getFilms } from '@/lib/storage';
 import Navigation from '@/components/Navigation';
 import FilmCard from '@/components/FilmCard';
 import SearchBar from '@/components/SearchBar';
-import { Film, SortOption } from '@/types/film';
-import { ChevronDown, X } from 'lucide-react';
+import { Film, SortOption, FilterOption } from '@/types/film';
+import { ChevronDown, X, Filter, SlidersHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Library = () => {
@@ -13,9 +13,14 @@ const Library = () => {
   const [sortBy, setSortBy] = useState<SortOption>('title');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [isFilterOptionsOpen, setIsFilterOptionsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [selectedDirector, setSelectedDirector] = useState<string | null>(null);
+  const [selectedActor, setSelectedActor] = useState<string | null>(null);
+  const [filterType, setFilterType] = useState<FilterOption>('all');
 
   useEffect(() => {
     loadFilms();
@@ -38,6 +43,26 @@ const Library = () => {
     setIsCategoryDropdownOpen(false);
   };
 
+  const handleYearChange = (year: string | null) => {
+    setSelectedYear(year);
+    setIsFilterOptionsOpen(false);
+  };
+
+  const handleDirectorChange = (director: string | null) => {
+    setSelectedDirector(director);
+    setIsFilterOptionsOpen(false);
+  };
+
+  const handleActorChange = (actor: string | null) => {
+    setSelectedActor(actor);
+    setIsFilterOptionsOpen(false);
+  };
+
+  const handleFilterTypeChange = (type: FilterOption) => {
+    setFilterType(type);
+    setIsFilterOptionsOpen(false);
+  };
+
   const handleSearch = (query: string) => {
     setSearchTerm(query);
   };
@@ -45,6 +70,10 @@ const Library = () => {
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedCategory(null);
+    setSelectedYear(null);
+    setSelectedDirector(null);
+    setSelectedActor(null);
+    setFilterType('all');
     toast.success('Filters cleared');
   };
 
@@ -65,6 +94,27 @@ const Library = () => {
     if (selectedCategory) {
       filtered = filtered.filter(film => 
         film.genre && film.genre.includes(selectedCategory)
+      );
+    }
+
+    // Apply year filter
+    if (selectedYear) {
+      filtered = filtered.filter(film => 
+        film.year === selectedYear
+      );
+    }
+
+    // Apply director filter
+    if (selectedDirector) {
+      filtered = filtered.filter(film => 
+        film.director === selectedDirector
+      );
+    }
+
+    // Apply actor filter
+    if (selectedActor) {
+      filtered = filtered.filter(film => 
+        film.actors && film.actors.includes(selectedActor)
       );
     }
     
@@ -88,11 +138,19 @@ const Library = () => {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
     if (isCategoryDropdownOpen) setIsCategoryDropdownOpen(false);
+    if (isFilterOptionsOpen) setIsFilterOptionsOpen(false);
   };
 
   const toggleCategoryDropdown = () => {
     setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
     if (isDropdownOpen) setIsDropdownOpen(false);
+    if (isFilterOptionsOpen) setIsFilterOptionsOpen(false);
+  };
+
+  const toggleFilterOptions = () => {
+    setIsFilterOptionsOpen(!isFilterOptionsOpen);
+    if (isDropdownOpen) setIsDropdownOpen(false);
+    if (isCategoryDropdownOpen) setIsCategoryDropdownOpen(false);
   };
 
   const handleRefresh = () => {
@@ -107,6 +165,14 @@ const Library = () => {
     { value: 'idNumber', label: 'ID Number' },
   ];
 
+  const filterOptions: { value: FilterOption; label: string }[] = [
+    { value: 'all', label: 'All Filters' },
+    { value: 'director', label: 'Directors' },
+    { value: 'actor', label: 'Actors' },
+    { value: 'genre', label: 'Genres' },
+    { value: 'year', label: 'Years' },
+  ];
+
   // Get unique categories from all films
   const getAllCategories = () => {
     const categories = new Set<string>();
@@ -118,9 +184,46 @@ const Library = () => {
     return Array.from(categories).sort();
   };
 
+  // Get unique years from all films
+  const getAllYears = () => {
+    const years = new Set<string>();
+    films.forEach(film => {
+      if (film.year) {
+        years.add(film.year);
+      }
+    });
+    return Array.from(years).sort((a, b) => b.localeCompare(a)); // Most recent years first
+  };
+
+  // Get unique directors from all films
+  const getAllDirectors = () => {
+    const directors = new Set<string>();
+    films.forEach(film => {
+      if (film.director) {
+        directors.add(film.director);
+      }
+    });
+    return Array.from(directors).sort();
+  };
+
+  // Get unique actors from all films
+  const getAllActors = () => {
+    const actors = new Set<string>();
+    films.forEach(film => {
+      if (film.actors && film.actors.length > 0) {
+        film.actors.forEach(actor => actors.add(actor));
+      }
+    });
+    return Array.from(actors).sort();
+  };
+
   const filteredAndSortedFilms = getFilteredAndSortedFilms();
   const allCategories = getAllCategories();
-  const isFiltering = searchTerm || selectedCategory;
+  const allYears = getAllYears();
+  const allDirectors = getAllDirectors();
+  const allActors = getAllActors();
+  
+  const isFiltering = searchTerm || selectedCategory || selectedYear || selectedDirector || selectedActor;
 
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
@@ -144,6 +247,128 @@ const Library = () => {
         
         {/* Filter and Sort Controls */}
         <div className="flex flex-wrap gap-3 mb-6">
+          {/* Advanced Filter Dropdown */}
+          <div className="relative inline-block">
+            <button
+              onClick={toggleFilterOptions}
+              className={`flex items-center space-x-2 text-sm font-medium border px-3 py-2 rounded-full hover:bg-gray-50 ${
+                selectedYear || selectedDirector || selectedActor ? 'text-filmora-coral border-filmora-coral' : 'text-gray-700 border-gray-300'
+              }`}
+            >
+              <Filter className="w-4 h-4" />
+              <span>Advanced Filters</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            
+            {isFilterOptionsOpen && (
+              <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-10 py-1 border">
+                {/* Filter Type Selector */}
+                <div className="px-4 py-2 border-b">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Filter by:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {filterOptions.map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleFilterTypeChange(option.value)}
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          filterType === option.value 
+                            ? 'bg-filmora-coral text-white' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Year Filter Options */}
+                {(filterType === 'all' || filterType === 'year') && allYears.length > 0 && (
+                  <div className="px-4 py-2 border-b">
+                    <p className="text-xs font-medium text-gray-500 mb-1">Years</p>
+                    <div className="max-h-32 overflow-y-auto">
+                      <button
+                        onClick={() => handleYearChange(null)}
+                        className={`block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 ${
+                          !selectedYear ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                        }`}
+                      >
+                        All Years
+                      </button>
+                      {allYears.map(year => (
+                        <button
+                          key={year}
+                          onClick={() => handleYearChange(year)}
+                          className={`block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 ${
+                            selectedYear === year ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                          }`}
+                        >
+                          {year}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Director Filter Options */}
+                {(filterType === 'all' || filterType === 'director') && allDirectors.length > 0 && (
+                  <div className="px-4 py-2 border-b">
+                    <p className="text-xs font-medium text-gray-500 mb-1">Directors</p>
+                    <div className="max-h-32 overflow-y-auto">
+                      <button
+                        onClick={() => handleDirectorChange(null)}
+                        className={`block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 ${
+                          !selectedDirector ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                        }`}
+                      >
+                        All Directors
+                      </button>
+                      {allDirectors.map(director => (
+                        <button
+                          key={director}
+                          onClick={() => handleDirectorChange(director)}
+                          className={`block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 ${
+                            selectedDirector === director ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                          }`}
+                        >
+                          {director}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Actor Filter Options */}
+                {(filterType === 'all' || filterType === 'actor') && allActors.length > 0 && (
+                  <div className="px-4 py-2">
+                    <p className="text-xs font-medium text-gray-500 mb-1">Actors</p>
+                    <div className="max-h-32 overflow-y-auto">
+                      <button
+                        onClick={() => handleActorChange(null)}
+                        className={`block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 ${
+                          !selectedActor ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                        }`}
+                      >
+                        All Actors
+                      </button>
+                      {allActors.map(actor => (
+                        <button
+                          key={actor}
+                          onClick={() => handleActorChange(actor)}
+                          className={`block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 ${
+                            selectedActor === actor ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                          }`}
+                        >
+                          {actor}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Category Filter Dropdown */}
           {allCategories.length > 0 && (
             <div className="relative inline-block">
@@ -190,7 +415,8 @@ const Library = () => {
                 onClick={toggleDropdown}
                 className="flex items-center space-x-2 text-sm font-medium text-gray-700 border border-gray-300 px-3 py-2 rounded-full hover:bg-gray-50"
               >
-                <span>Sort by: {sortOptions.find(option => option.value === sortBy)?.label}</span>
+                <SlidersHorizontal className="w-4 h-4" />
+                <span>Sort: {sortOptions.find(option => option.value === sortBy)?.label}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
               
@@ -223,6 +449,52 @@ const Library = () => {
             </button>
           )}
         </div>
+
+        {/* Active Filters Display */}
+        {isFiltering && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {selectedCategory && (
+              <div className="bg-filmora-light-pink text-filmora-coral px-3 py-1 rounded-full text-sm flex items-center">
+                <span>Genre: {selectedCategory}</span>
+                <button onClick={() => setSelectedCategory(null)} className="ml-2">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+            {selectedYear && (
+              <div className="bg-filmora-light-pink text-filmora-coral px-3 py-1 rounded-full text-sm flex items-center">
+                <span>Year: {selectedYear}</span>
+                <button onClick={() => setSelectedYear(null)} className="ml-2">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+            {selectedDirector && (
+              <div className="bg-filmora-light-pink text-filmora-coral px-3 py-1 rounded-full text-sm flex items-center">
+                <span>Director: {selectedDirector}</span>
+                <button onClick={() => setSelectedDirector(null)} className="ml-2">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+            {selectedActor && (
+              <div className="bg-filmora-light-pink text-filmora-coral px-3 py-1 rounded-full text-sm flex items-center">
+                <span>Actor: {selectedActor}</span>
+                <button onClick={() => setSelectedActor(null)} className="ml-2">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+            {searchTerm && (
+              <div className="bg-filmora-light-pink text-filmora-coral px-3 py-1 rounded-full text-sm flex items-center">
+                <span>Search: {searchTerm}</span>
+                <button onClick={() => setSearchTerm('')} className="ml-2">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {isLoading ? (

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecentlyAddedFilms, getSearchHistory } from '@/lib/storage';
@@ -15,11 +14,9 @@ const Index = () => {
   const [recentSearches, setRecentSearches] = useState<SearchHistory[]>([]);
   const navigate = useNavigate();
   
-  // Scroll states for recent films
   const [canScrollLeftFilms, setCanScrollLeftFilms] = useState(false);
   const [canScrollRightFilms, setCanScrollRightFilms] = useState(false);
   
-  // Scroll states for recent searches
   const [canScrollLeftSearches, setCanScrollLeftSearches] = useState(false);
   const [canScrollRightSearches, setCanScrollRightSearches] = useState(false);
 
@@ -41,7 +38,6 @@ const Index = () => {
     toast.success('Data refreshed');
   };
 
-  // Scroll functions for films container
   const scrollLeftFilms = () => {
     const container = document.getElementById('recent-films-container');
     if (container) {
@@ -56,7 +52,6 @@ const Index = () => {
     }
   };
 
-  // Scroll functions for searches container
   const scrollLeftSearches = () => {
     const container = document.getElementById('recent-searches-container');
     if (container) {
@@ -71,7 +66,6 @@ const Index = () => {
     }
   };
 
-  // Check scroll position for films container
   const checkScrollFilms = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     setCanScrollLeftFilms(target.scrollLeft > 0);
@@ -80,7 +74,6 @@ const Index = () => {
     );
   };
 
-  // Check scroll position for searches container
   const checkScrollSearches = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     setCanScrollLeftSearches(target.scrollLeft > 0);
@@ -89,7 +82,6 @@ const Index = () => {
     );
   };
 
-  // Set initial scroll states when component loads
   useEffect(() => {
     const filmsContainer = document.getElementById('recent-films-container');
     if (filmsContainer) {
@@ -109,22 +101,25 @@ const Index = () => {
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
       <div className="animate-fade-in">
-        {/* Top Buttons */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <Link to="/add-film" className="filmora-button-primary">
+          <Link 
+            to="/add-film" 
+            className="bg-filmora-coral text-white py-2 px-4 rounded-[10px] text-center flex items-center justify-center font-medium transition-colors hover:bg-opacity-90"
+          >
             Add Film
           </Link>
-          <Link to="/library" className="filmora-button-secondary">
+          <Link 
+            to="/library" 
+            className="bg-gray-100 text-gray-800 py-2 px-4 rounded-[10px] text-center flex items-center justify-center font-medium transition-colors hover:bg-gray-200"
+          >
             View Library
           </Link>
         </div>
 
-        {/* Search Bar */}
         <div className="mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <SearchBar onSearch={handleSearch} placeholder="Search for films..." />
         </div>
 
-        {/* Recent Searches - with horizontal scroll */}
         {recentSearches.length > 0 && (
           <section className="mb-8 animate-slide-up relative" style={{ animationDelay: '0.2s' }}>
             <div className="flex justify-between items-center mb-4">
@@ -132,7 +127,6 @@ const Index = () => {
             </div>
             
             <div className="relative group">
-              {/* Left scroll button */}
               {canScrollLeftSearches && (
                 <button 
                   onClick={scrollLeftSearches} 
@@ -143,7 +137,6 @@ const Index = () => {
                 </button>
               )}
               
-              {/* Right scroll button */}
               {canScrollRightSearches && (
                 <button 
                   onClick={scrollRightSearches} 
@@ -154,7 +147,6 @@ const Index = () => {
                 </button>
               )}
               
-              {/* Horizontal scrolling container */}
               <div 
                 id="recent-searches-container"
                 className="flex overflow-x-auto pb-4 gap-4 px-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
@@ -181,7 +173,6 @@ const Index = () => {
           </section>
         )}
 
-        {/* Recently Added Films - with horizontal scroll */}
         {recentFilms.length > 0 && (
           <section className="animate-slide-up relative" style={{ animationDelay: '0.3s' }}>
             <div className="flex justify-between items-center mb-4">
@@ -189,7 +180,6 @@ const Index = () => {
             </div>
             
             <div className="relative group">
-              {/* Left scroll button */}
               {canScrollLeftFilms && (
                 <button 
                   onClick={scrollLeftFilms} 
@@ -200,7 +190,6 @@ const Index = () => {
                 </button>
               )}
               
-              {/* Right scroll button */}
               {canScrollRightFilms && (
                 <button 
                   onClick={scrollRightFilms} 
@@ -211,7 +200,6 @@ const Index = () => {
                 </button>
               )}
               
-              {/* Horizontal scrolling container */}
               <div 
                 id="recent-films-container"
                 className="flex overflow-x-auto pb-4 gap-4 px-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
@@ -231,12 +219,14 @@ const Index = () => {
           </section>
         )}
 
-        {/* Empty State */}
         {recentFilms.length === 0 && recentSearches.length === 0 && (
           <div className="text-center py-12 animate-fade-in">
             <h2 className="text-2xl font-bold mb-2">Welcome to your Film Library</h2>
             <p className="text-gray-600 mb-8">Start by adding your first film or searching for movies</p>
-            <Link to="/add-film" className="filmora-button-primary inline-block">
+            <Link 
+              to="/add-film" 
+              className="bg-filmora-coral text-white py-2 px-4 rounded-[10px] text-center inline-flex items-center justify-center font-medium transition-colors hover:bg-opacity-90"
+            >
               Add Your First Film
             </Link>
           </div>

@@ -86,7 +86,7 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div 
-        className="modal-content max-h-[90vh] overflow-y-auto overflow-x-auto"
+        className="modal-content max-w-md max-h-[90vh] w-[90%] overflow-y-auto overflow-x-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {isEditing ? (
@@ -119,7 +119,7 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
         )}
 
         {/* Image */}
-        <div className="aspect-video relative rounded-xl overflow-hidden mb-5 bg-gray-100">
+        <div className="aspect-square relative rounded-xl overflow-hidden mb-5 bg-gray-100">
           {isEditing ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
               {editedFilm.image && !imageError ? (

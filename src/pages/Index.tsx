@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecentlyAddedFilms, getSearchHistory } from '@/lib/storage';
@@ -104,13 +105,13 @@ const Index = () => {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Link 
             to="/add-film" 
-            className="bg-filmora-coral text-white py-2 px-4 rounded-[10px] text-center flex items-center justify-center font-medium transition-colors hover:bg-opacity-90"
+            className="bg-filmora-coral text-white py-5 px-4 rounded-[10px] text-center flex items-center justify-center font-medium transition-colors hover:bg-opacity-90"
           >
             Add Film
           </Link>
           <Link 
             to="/library" 
-            className="bg-gray-100 text-gray-800 py-2 px-4 rounded-[10px] text-center flex items-center justify-center font-medium transition-colors hover:bg-gray-200"
+            className="bg-gray-100 text-gray-800 py-5 px-4 rounded-[10px] text-center flex items-center justify-center font-medium transition-colors hover:bg-gray-200"
           >
             View Library
           </Link>

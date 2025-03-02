@@ -1,3 +1,4 @@
+
 import { useState, useRef } from 'react';
 import { toast } from 'sonner';
 import Navigation from '@/components/Navigation';
@@ -123,8 +124,9 @@ const AddFilm = () => {
               onChange={handleInputChange}
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
-              placeholder="Film Title"
+              placeholder="Film Title *"
             />
+            <span className="text-xs text-red-500 mt-1">Required</span>
           </div>
 
           {/* Director Field */}
@@ -137,8 +139,9 @@ const AddFilm = () => {
               onChange={handleInputChange}
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
-              placeholder="Director"
+              placeholder="Director *"
             />
+            <span className="text-xs text-red-500 mt-1">Required</span>
           </div>
 
           {/* Actors Field */}
@@ -181,8 +184,9 @@ const AddFilm = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
-                placeholder="ID number"
+                placeholder="ID number *"
               />
+              <span className="text-xs text-red-500 mt-1">Required</span>
             </div>
           </div>
 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { getFilms } from '@/lib/storage';
 import Navigation from '@/components/Navigation';
@@ -21,6 +20,7 @@ const Library = () => {
   const [selectedDirector, setSelectedDirector] = useState<string | null>(null);
   const [selectedActor, setSelectedActor] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<FilterOption>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     loadFilms();
@@ -80,7 +80,6 @@ const Library = () => {
   const getFilteredAndSortedFilms = () => {
     let filtered = [...films];
     
-    // Apply search term filter
     if (searchTerm) {
       filtered = filtered.filter(film => 
         film.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -90,35 +89,30 @@ const Library = () => {
       );
     }
     
-    // Apply category filter
     if (selectedCategory) {
       filtered = filtered.filter(film => 
         film.genre && film.genre.includes(selectedCategory)
       );
     }
 
-    // Apply year filter
     if (selectedYear) {
       filtered = filtered.filter(film => 
         film.year === selectedYear
       );
     }
 
-    // Apply director filter
     if (selectedDirector) {
       filtered = filtered.filter(film => 
         film.director === selectedDirector
       );
     }
 
-    // Apply actor filter
     if (selectedActor) {
       filtered = filtered.filter(film => 
         film.actors && film.actors.includes(selectedActor)
       );
     }
     
-    // Apply sorting
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case 'title':
@@ -173,7 +167,6 @@ const Library = () => {
     { value: 'year', label: 'Years' },
   ];
 
-  // Get unique categories from all films
   const getAllCategories = () => {
     const categories = new Set<string>();
     films.forEach(film => {
@@ -184,7 +177,6 @@ const Library = () => {
     return Array.from(categories).sort();
   };
 
-  // Get unique years from all films
   const getAllYears = () => {
     const years = new Set<string>();
     films.forEach(film => {
@@ -192,10 +184,9 @@ const Library = () => {
         years.add(film.year);
       }
     });
-    return Array.from(years).sort((a, b) => b.localeCompare(a)); // Most recent years first
+    return Array.from(years).sort((a, b) => b.localeCompare(a));
   };
 
-  // Get unique directors from all films
   const getAllDirectors = () => {
     const directors = new Set<string>();
     films.forEach(film => {
@@ -206,7 +197,6 @@ const Library = () => {
     return Array.from(directors).sort();
   };
 
-  // Get unique actors from all films
   const getAllActors = () => {
     const actors = new Set<string>();
     films.forEach(film => {
@@ -225,18 +215,15 @@ const Library = () => {
   
   const isFiltering = searchTerm || selectedCategory || selectedYear || selectedDirector || selectedActor;
 
+  const toggleViewMode = () => {
+    setViewMode(viewMode === 'grid' ? 'list' : 'grid');
+  };
+
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">Your Film Library</h1>
-        <p className="text-gray-600 mb-6">
-          {films.length} {films.length === 1 ? 'film' : 'films'} in your collection
-          {isFiltering && filteredAndSortedFilms.length !== films.length && (
-            <span> • Showing {filteredAndSortedFilms.length} results</span>
-          )}
-        </p>
+        <h1 className="text-2xl font-bold mb-4">Library</h1>
         
-        {/* Search Bar */}
         <div className="mb-6">
           <SearchBar 
             onSearch={handleSearch} 
@@ -245,13 +232,11 @@ const Library = () => {
           />
         </div>
         
-        {/* Filter and Sort Controls */}
         <div className="flex flex-wrap gap-3 mb-6">
-          {/* Advanced Filter Dropdown */}
           <div className="relative inline-block">
             <button
               onClick={toggleFilterOptions}
-              className={`flex items-center space-x-2 text-sm font-medium border px-3 py-2 rounded-full hover:bg-gray-50 ${
+              className={`flex items-center space-x-2 text-sm font-bold border px-3 py-2 rounded-[10px] hover:bg-gray-50 ${
                 selectedYear || selectedDirector || selectedActor ? 'text-filmora-coral border-filmora-coral' : 'text-gray-700 border-gray-300'
               }`}
             >
@@ -262,7 +247,6 @@ const Library = () => {
             
             {isFilterOptionsOpen && (
               <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-10 py-1 border">
-                {/* Filter Type Selector */}
                 <div className="px-4 py-2 border-b">
                   <p className="text-sm font-medium text-gray-700 mb-2">Filter by:</p>
                   <div className="flex flex-wrap gap-2">
@@ -282,7 +266,6 @@ const Library = () => {
                   </div>
                 </div>
 
-                {/* Year Filter Options */}
                 {(filterType === 'all' || filterType === 'year') && allYears.length > 0 && (
                   <div className="px-4 py-2 border-b">
                     <p className="text-xs font-medium text-gray-500 mb-1">Years</p>
@@ -310,7 +293,6 @@ const Library = () => {
                   </div>
                 )}
 
-                {/* Director Filter Options */}
                 {(filterType === 'all' || filterType === 'director') && allDirectors.length > 0 && (
                   <div className="px-4 py-2 border-b">
                     <p className="text-xs font-medium text-gray-500 mb-1">Directors</p>
@@ -338,7 +320,6 @@ const Library = () => {
                   </div>
                 )}
 
-                {/* Actor Filter Options */}
                 {(filterType === 'all' || filterType === 'actor') && allActors.length > 0 && (
                   <div className="px-4 py-2">
                     <p className="text-xs font-medium text-gray-500 mb-1">Actors</p>
@@ -369,12 +350,11 @@ const Library = () => {
             )}
           </div>
 
-          {/* Category Filter Dropdown */}
           {allCategories.length > 0 && (
             <div className="relative inline-block">
               <button
                 onClick={toggleCategoryDropdown}
-                className={`flex items-center space-x-2 text-sm font-medium border px-3 py-2 rounded-full hover:bg-gray-50 ${
+                className={`flex items-center space-x-2 text-sm font-bold border px-3 py-2 rounded-[10px] hover:bg-gray-50 ${
                   selectedCategory ? 'text-filmora-coral border-filmora-coral' : 'text-gray-700 border-gray-300'
                 }`}
               >
@@ -408,12 +388,11 @@ const Library = () => {
             </div>
           )}
 
-          {/* Sort Dropdown */}
           {films.length > 0 && (
             <div className="relative inline-block">
               <button
                 onClick={toggleDropdown}
-                className="flex items-center space-x-2 text-sm font-medium text-gray-700 border border-gray-300 px-3 py-2 rounded-full hover:bg-gray-50"
+                className="flex items-center space-x-2 text-sm font-bold text-gray-700 border border-gray-300 px-3 py-2 rounded-[10px] hover:bg-gray-50"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 <span>Sort: {sortOptions.find(option => option.value === sortBy)?.label}</span>
@@ -438,11 +417,17 @@ const Library = () => {
             </div>
           )}
           
-          {/* Clear Filters Button */}
+          <button
+            onClick={toggleViewMode}
+            className="flex items-center space-x-2 text-sm font-bold text-gray-700 border border-gray-300 px-3 py-2 rounded-[10px] hover:bg-gray-50"
+          >
+            <span>View: {viewMode === 'grid' ? 'Grid' : 'List'}</span>
+          </button>
+          
           {isFiltering && (
             <button
               onClick={clearFilters}
-              className="flex items-center space-x-2 text-sm font-medium text-gray-700 border border-gray-300 px-3 py-2 rounded-full hover:bg-gray-50"
+              className="flex items-center space-x-2 text-sm font-bold text-gray-700 border border-gray-300 px-3 py-2 rounded-[10px] hover:bg-gray-50"
             >
               <X className="w-4 h-4" />
               <span>Clear Filters</span>
@@ -450,7 +435,6 @@ const Library = () => {
           )}
         </div>
 
-        {/* Active Filters Display */}
         {isFiltering && (
           <div className="flex flex-wrap gap-2 mb-4">
             {selectedCategory && (
@@ -502,15 +486,27 @@ const Library = () => {
           <div className="animate-pulse-soft">Loading your films...</div>
         </div>
       ) : filteredAndSortedFilms.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 animate-fade-in">
-          {filteredAndSortedFilms.map(film => (
-            <FilmCard 
-              key={film.id} 
-              film={film} 
-              onFilmUpdated={handleRefresh} 
-            />
-          ))}
-        </div>
+        viewMode === 'grid' ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 animate-fade-in">
+            {filteredAndSortedFilms.map(film => (
+              <FilmCard 
+                key={film.id} 
+                film={film} 
+                onFilmUpdated={handleRefresh} 
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-6 animate-fade-in">
+            {filteredAndSortedFilms.map(film => (
+              <FilmCard 
+                key={film.id} 
+                film={film} 
+                onFilmUpdated={handleRefresh} 
+              />
+            ))}
+          </div>
+        )
       ) : (
         <div className="text-center py-12 animate-fade-in">
           {films.length > 0 ? (

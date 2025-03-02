@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchFilms, addSearchHistoryItem } from '@/lib/storage';
@@ -34,14 +33,12 @@ const Search = () => {
     
     setIsLoading(true);
     
-    // Delay to simulate network request
     setTimeout(() => {
       const results = searchFilms(query, filterBy, sortBy);
       setSearchResults(results);
       setSearchQuery(query);
       setSearchParams({ q: query });
       
-      // Add to search history
       if (results.length > 0) {
         addSearchHistoryItem(query, results.length);
       }
@@ -110,10 +107,9 @@ const Search = () => {
           onClick={() => navigate(-1)}
           className="mr-4 flex items-center text-gray-600 hover:text-black transition-colors"
         >
-          <ArrowLeft className="w-5 h-5 mr-1" />
-          <span>Back</span>
+          <ArrowLeft className="w-5 h-5" />
         </button>
-        <h1 className="text-2xl font-bold">Search Films</h1>
+        <h1 className="text-2xl font-bold">Search</h1>
       </div>
 
       <div className="mb-8 animate-fade-in">
@@ -124,10 +120,8 @@ const Search = () => {
         />
       </div>
 
-      {/* Filter & Sort Controls */}
       {searchQuery && (
         <div className="flex flex-wrap gap-3 mb-6 animate-slide-up">
-          {/* Filter Dropdown */}
           <div className="relative inline-block">
             <button
               onClick={toggleFilterDropdown}
@@ -154,7 +148,6 @@ const Search = () => {
             )}
           </div>
 
-          {/* Sort Dropdown */}
           <div className="relative inline-block">
             <button
               onClick={toggleSortDropdown}
@@ -183,7 +176,6 @@ const Search = () => {
         </div>
       )}
 
-      {/* Search Results */}
       {searchQuery && (
         <div className="animate-fade-in">
           {isLoading ? (
@@ -195,7 +187,7 @@ const Search = () => {
               <h2 className="text-xl font-semibold mb-4">
                 Found {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} for "{searchQuery}"
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 {searchResults.map(film => (
                   <FilmCard 
                     key={film.id} 
@@ -215,11 +207,10 @@ const Search = () => {
         </div>
       )}
 
-      {/* Empty State */}
       {!searchQuery && (
         <div className="text-center py-12 animate-fade-in">
           <p className="text-gray-600 mb-2">Search for films in your library</p>
-          <p className="text-gray-500">Use the search bar above to find films by title, director, actors, etc.</p>
+          <p className="text-gray-500">Use the search bar above to find films</p>
         </div>
       )}
 

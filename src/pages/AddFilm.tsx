@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react';
 import { toast } from 'sonner';
 import Navigation from '@/components/Navigation';
@@ -106,13 +105,12 @@ const AddFilm = () => {
           onClick={() => navigate(-1)}
           className="mr-4 flex items-center text-gray-600 hover:text-black transition-colors"
         >
-          <ArrowLeft className="w-5 h-5 mr-1" />
-          <span>Back</span>
+          <ArrowLeft className="w-5 h-5" />
         </button>
       </div>
 
-      <div className="max-w-md mx-auto bg-white rounded-3xl border border-red-300 p-6 shadow-sm animate-fade-in">
-        <h1 className="text-3xl font-bold mb-6">Add film</h1>
+      <div className="max-w-md mx-auto bg-white rounded-[10px] border border-red-300 p-6 shadow-sm animate-fade-in">
+        <h1 className="text-3xl font-bold mb-6">Add</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title Field */}
@@ -124,7 +122,7 @@ const AddFilm = () => {
               value={film.title || ''}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+              className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
               placeholder="Film Title"
             />
           </div>
@@ -138,7 +136,7 @@ const AddFilm = () => {
               value={film.director || ''}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+              className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
               placeholder="Director"
             />
           </div>
@@ -153,7 +151,7 @@ const AddFilm = () => {
                 setActorsInput(e.target.value);
                 setFilm({ ...film, actors: parseCommaSeparatedValues(e.target.value) });
               }}
-              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+              className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
               placeholder="Actor"
             />
           </div>
@@ -169,7 +167,7 @@ const AddFilm = () => {
                   setGenreInput(e.target.value);
                   setFilm({ ...film, genre: parseCommaSeparatedValues(e.target.value) });
                 }}
-                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
                 placeholder="Genre"
               />
             </div>
@@ -182,7 +180,7 @@ const AddFilm = () => {
                 value={film.idNumber || ''}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
                 placeholder="ID number"
               />
             </div>
@@ -199,7 +197,7 @@ const AddFilm = () => {
                   setTagsInput(e.target.value);
                   setFilm({ ...film, tags: parseCommaSeparatedValues(e.target.value) });
                 }}
-                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
                 placeholder="Tags"
               />
             </div>
@@ -211,7 +209,7 @@ const AddFilm = () => {
                 name="year"
                 value={film.year || ''}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+                className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
                 placeholder="Year"
               />
             </div>
@@ -219,7 +217,7 @@ const AddFilm = () => {
 
           {/* Image Upload Area */}
           <div 
-            className="border-2 border-gray-300 border-dashed rounded-3xl p-6 mt-4 flex flex-col items-center justify-center cursor-pointer"
+            className="border-2 border-gray-300 border-dashed rounded-[10px] p-6 mt-4 flex flex-col items-center justify-center cursor-pointer"
             onClick={triggerFileInput}
           >
             <input
@@ -235,7 +233,7 @@ const AddFilm = () => {
                 <img
                   src={imagePreview || imageUrl}
                   alt="Film preview"
-                  className="w-full h-32 object-cover rounded-lg"
+                  className="w-full h-32 object-cover rounded-[10px]"
                   onError={() => {
                     toast.error('Invalid image URL');
                     setImageUrl('');
@@ -266,7 +264,7 @@ const AddFilm = () => {
               value={imageUrl}
               onChange={handleUrlImageChange}
               placeholder="Upload image via URL"
-              className="w-full px-4 py-3 border border-gray-300 rounded-full text-lg"
+              className="w-full px-4 py-3 border border-gray-300 rounded-[10px] text-lg"
             />
           </div>
 
@@ -275,15 +273,15 @@ const AddFilm = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-4 py-3 bg-filmora-coral text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+              className="px-4 py-6 border-2 border-black text-black rounded-[10px] font-bold hover:bg-opacity-90 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-3 bg-filmora-coral text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+              className="px-4 py-6 bg-green-500 text-white rounded-[10px] font-bold hover:bg-opacity-90 transition-colors"
             >
-              Add film
+              Add
             </button>
           </div>
         </form>

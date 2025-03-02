@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,7 +32,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.8rem;
+    --radius: 10px;
 
     --sidebar-background: 0 0% 98%;
 
@@ -103,11 +102,11 @@
 
 @layer components {
   .filmora-button {
-    @apply relative px-6 py-3 rounded-3xl font-medium text-lg transition-all duration-300 overflow-hidden;
+    @apply relative px-6 py-6 rounded-[10px] font-bold text-lg transition-all duration-300 overflow-hidden;
   }
 
   .filmora-button-primary {
-    @apply filmora-button bg-filmora-black text-filmora-white hover:bg-opacity-80;
+    @apply filmora-button bg-green-500 text-filmora-white hover:bg-opacity-80;
   }
 
   .filmora-button-secondary {
@@ -115,11 +114,11 @@
   }
 
   .filmora-card {
-    @apply rounded-3xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md;
+    @apply rounded-[10px] overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md;
   }
 
   .filmora-input {
-    @apply w-full px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-filmora-coral;
+    @apply w-full px-4 py-3 rounded-[10px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-filmora-coral;
   }
 
   .nav-icon {

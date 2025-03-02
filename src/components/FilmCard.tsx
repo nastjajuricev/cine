@@ -21,11 +21,11 @@ const FilmCard = ({ film, variant = 'library', onFilmUpdated }: FilmCardProps) =
   const getBgColor = () => {
     switch (variant) {
       case 'search':
-        return 'bg-filmora-light-pink';
+        return 'bg-filmora-coral/25';
       case 'recent':
         return 'bg-filmora-light-green';
       default:
-        return 'bg-white';
+        return 'bg-filmora-coral/25'; // Changed to coral with 25% opacity for all cards
     }
   };
 
@@ -41,7 +41,7 @@ const FilmCard = ({ film, variant = 'library', onFilmUpdated }: FilmCardProps) =
         className={cardClasses}
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="aspect-square relative overflow-hidden">
+        <div className="aspect-square relative overflow-hidden rounded-[10px]">
           {film.image && !imageError ? (
             <img
               src={film.image}
@@ -57,7 +57,7 @@ const FilmCard = ({ film, variant = 'library', onFilmUpdated }: FilmCardProps) =
           )}
         </div>
         <div className="p-4">
-          <h3 className="font-semibold text-lg line-clamp-1">{film.title}</h3>
+          <h3 className="font-bold text-lg line-clamp-1">{film.title}</h3>
           <p className="text-gray-600 mt-1">ID: {film.idNumber}</p>
         </div>
       </div>

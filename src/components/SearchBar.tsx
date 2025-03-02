@@ -42,10 +42,10 @@ const SearchBar = ({
       />
       <button
         type="submit"
-        className="absolute right-0 top-0 h-full px-4 flex items-center justify-center bg-filmora-black rounded-r-full"
+        className="absolute right-0 top-0 h-full px-4 flex items-center justify-center bg-filmora-black rounded-r-[10px]"
         aria-label="Search"
       >
-        <Search className="w-5 h-5 text-filmora-white" />
+        <Search className="w-5 h-5 text-filmora-white rounded-[10px]" />
       </button>
     </form>
   );

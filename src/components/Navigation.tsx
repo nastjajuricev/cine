@@ -23,7 +23,7 @@ const Navigation = () => {
               <img 
                 src="/lovable-uploads/c1448882-2375-468f-8505-1afe7c43686e.png" 
                 alt="Add Film" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-[10px]"
               />
             </div>
           </Link>
@@ -37,7 +37,7 @@ const Navigation = () => {
               <img 
                 src="/lovable-uploads/cc59a404-c1ec-464a-95ab-8730154a3bbc.png" 
                 alt="Search" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-[10px]"
               />
             </div>
           </Link>
@@ -64,7 +64,7 @@ const Navigation = () => {
               <img 
                 src="/lovable-uploads/57c6be16-d930-40de-92aa-97e9ca5782f4.png" 
                 alt="Library" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-[10px]"
               />
             </div>
           </Link>

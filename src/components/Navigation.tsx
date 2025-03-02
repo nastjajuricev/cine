@@ -1,8 +1,7 @@
 
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, Search, Film, Home } from 'lucide-react';
-import FilmoraLogo from './FilmoraLogo';
 import { cn } from '@/lib/utils';
+import FilmoraLogo from './FilmoraLogo';
 
 const Navigation = () => {
   const location = useLocation();
@@ -20,10 +19,13 @@ const Navigation = () => {
             className="flex flex-col items-center transition-transform duration-200 hover:scale-110"
             aria-label="Add Film"
           >
-            <Plus 
-              className={cn("nav-icon text-white", isActive('/add-film') && "text-filmora-coral")} 
-              strokeWidth={2.5} 
-            />
+            <div className={cn("w-7 h-7 flex items-center justify-center", isActive('/add-film') && "text-filmora-coral")}>
+              <img 
+                src="/lovable-uploads/c1448882-2375-468f-8505-1afe7c43686e.png" 
+                alt="Add Film" 
+                className="w-full h-full object-contain"
+              />
+            </div>
           </Link>
           
           <Link 
@@ -31,10 +33,13 @@ const Navigation = () => {
             className="flex flex-col items-center transition-transform duration-200 hover:scale-110"
             aria-label="Search"
           >
-            <Search 
-              className={cn("nav-icon text-white", isActive('/search') && "text-filmora-coral")} 
-              strokeWidth={2.5} 
-            />
+            <div className={cn("w-7 h-7 flex items-center justify-center", isActive('/search') && "text-filmora-coral")}>
+              <img 
+                src="/lovable-uploads/cc59a404-c1ec-464a-95ab-8730154a3bbc.png" 
+                alt="Search" 
+                className="w-full h-full object-contain"
+              />
+            </div>
           </Link>
           
           <Link 
@@ -55,10 +60,13 @@ const Navigation = () => {
             className="flex flex-col items-center transition-transform duration-200 hover:scale-110"
             aria-label="Library"
           >
-            <Film 
-              className={cn("nav-icon text-white", isActive('/library') && "text-filmora-coral")} 
-              strokeWidth={2.5} 
-            />
+            <div className={cn("w-7 h-7 flex items-center justify-center", isActive('/library') && "text-filmora-coral")}>
+              <img 
+                src="/lovable-uploads/57c6be16-d930-40de-92aa-97e9ca5782f4.png" 
+                alt="Library" 
+                className="w-full h-full object-contain"
+              />
+            </div>
           </Link>
         </nav>
       </div>

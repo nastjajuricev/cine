@@ -1,6 +1,8 @@
 
 import { Film } from '@/types/film';
 import FilmCard from '@/components/FilmCard';
+import { useState } from 'react';
+import FilmModal from '@/components/FilmModal';
 
 interface ListViewComponentProps {
   films: Film[];
@@ -8,6 +10,9 @@ interface ListViewComponentProps {
 }
 
 const ListViewComponent = ({ films, onFilmUpdated }: ListViewComponentProps) => {
+  const [selectedFilm, setSelectedFilm] = useState<Film | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const getFilmsByAlphabeticalGroups = () => {
     const groupedFilms: { [key: string]: Film[] } = {};
     
@@ -24,6 +29,11 @@ const ListViewComponent = ({ films, onFilmUpdated }: ListViewComponentProps) => 
 
   const alphabeticalGroups = getFilmsByAlphabeticalGroups();
 
+  const handleFilmClick = (film: Film) => {
+    setSelectedFilm(film);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="animate-fade-in">
       {alphabeticalGroups.map(([letter, films]) => (
@@ -33,20 +43,9 @@ const ListViewComponent = ({ films, onFilmUpdated }: ListViewComponentProps) => 
             {films.map(film => (
               <div 
                 key={film.id}
-                onClick={() => {
-                  const filmCard = document.getElementById(`film-${film.id}`);
-                  if (filmCard) {
-                    filmCard.click();
-                  }
-                }}
+                onClick={() => handleFilmClick(film)}
                 className="flex justify-between items-center p-4 bg-gray-300 rounded-full hover:bg-gray-400 cursor-pointer"
               >
-                <div id={`film-${film.id}`} className="hidden">
-                  <FilmCard
-                    film={film}
-                    onFilmUpdated={onFilmUpdated}
-                  />
-                </div>
                 <span className="font-bold text-xl">{film.title}</span>
                 <span className="font-bold text-xl">Nr #{film.idNumber}</span>
               </div>
@@ -54,6 +53,15 @@ const ListViewComponent = ({ films, onFilmUpdated }: ListViewComponentProps) => 
           </div>
         </div>
       ))}
+
+      {selectedFilm && (
+        <FilmModal
+          film={selectedFilm}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onFilmUpdated={onFilmUpdated}
+        />
+      )}
     </div>
   );
 };

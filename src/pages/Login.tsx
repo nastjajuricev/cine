@@ -5,17 +5,20 @@ import { toast } from 'sonner';
 import FilmoraLogo from '@/components/FilmoraLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/AuthContext';
 
 const Login = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
+    if (!name || !email || !password) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -24,8 +27,8 @@ const Login = () => {
     
     // Simulate login - in a real app, this would call an authentication API
     setTimeout(() => {
-      // Store auth state in localStorage
-      localStorage.setItem('filmora-isAuthenticated', 'true');
+      // Login using the auth context
+      login(name);
       
       setIsLoading(false);
       toast.success('Logged in successfully');
@@ -38,11 +41,25 @@ const Login = () => {
       <div className="w-full max-w-md bg-white rounded-[20px] shadow-lg p-8 space-y-8 animate-fade-in">
         <div className="flex flex-col items-center">
           <FilmoraLogo size={50} />
-          <h1 className="mt-6 text-3xl font-bold text-center">Welcome to Filmora</h1>
-          <p className="mt-2 text-center text-gray-600">Sign in to your account</p>
+          <h1 className="mt-6 text-3xl font-bold text-center">Sign in to your account</h1>
         </div>
         
         <form onSubmit={handleLogin} className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              Your Name
+            </label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="John Doe"
+              className="w-full"
+              required
+            />
+          </div>
+          
           <div className="space-y-2">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email

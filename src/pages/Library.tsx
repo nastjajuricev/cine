@@ -6,6 +6,7 @@ import SearchBar from '@/components/SearchBar';
 import { Film, SortOption, FilterOption } from '@/types/film';
 import { ChevronDown, X, Filter, SlidersHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 const Library = () => {
   const [films, setFilms] = useState<Film[]>([]);
@@ -21,6 +22,7 @@ const Library = () => {
   const [selectedActor, setSelectedActor] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<FilterOption>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const { userName } = useAuth();
 
   useEffect(() => {
     loadFilms();
@@ -219,10 +221,26 @@ const Library = () => {
     setViewMode(viewMode === 'grid' ? 'list' : 'grid');
   };
 
+  const getFilmsByAlphabeticalGroups = () => {
+    const groupedFilms: { [key: string]: Film[] } = {};
+    
+    filteredAndSortedFilms.forEach(film => {
+      const firstLetter = film.title.charAt(0).toUpperCase();
+      if (!groupedFilms[firstLetter]) {
+        groupedFilms[firstLetter] = [];
+      }
+      groupedFilms[firstLetter].push(film);
+    });
+    
+    return Object.entries(groupedFilms).sort((a, b) => a[0].localeCompare(b[0]));
+  };
+
+  const alphabeticalGroups = getFilmsByAlphabeticalGroups();
+
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">Library</h1>
+        <h1 className="text-2xl font-bold mb-4">Welcome {userName}</h1>
         
         <div className="mb-6">
           <SearchBar 
@@ -479,6 +497,23 @@ const Library = () => {
             )}
           </div>
         )}
+
+        {viewMode === 'list' && (
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <button className="bg-white text-black font-bold py-4 px-6 rounded-full border border-black text-xl">
+              Alphabetically
+            </button>
+            <button className="bg-black text-white font-bold py-4 px-6 rounded-full text-xl">
+              By Director
+            </button>
+            <button className="bg-black text-white font-bold py-4 px-6 rounded-full text-xl">
+              By Actor
+            </button>
+            <button className="bg-black text-white font-bold py-4 px-6 rounded-full text-xl">
+              By Genre
+            </button>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -497,13 +532,34 @@ const Library = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-6 animate-fade-in">
-            {filteredAndSortedFilms.map(film => (
-              <FilmCard 
-                key={film.id} 
-                film={film} 
-                onFilmUpdated={handleRefresh} 
-              />
+          <div className="animate-fade-in">
+            {alphabeticalGroups.map(([letter, films]) => (
+              <div key={letter} className="mb-6">
+                <h2 className="text-4xl font-bold mb-4">{letter}</h2>
+                <div className="space-y-3">
+                  {films.map(film => (
+                    <div 
+                      key={film.id}
+                      onClick={() => {
+                        const filmCard = document.getElementById(`film-${film.id}`);
+                        if (filmCard) {
+                          filmCard.click();
+                        }
+                      }}
+                      className="flex justify-between items-center p-4 bg-gray-300 rounded-full hover:bg-gray-400 cursor-pointer"
+                    >
+                      <div id={`film-${film.id}`} className="hidden">
+                        <FilmCard
+                          film={film}
+                          onFilmUpdated={handleRefresh}
+                        />
+                      </div>
+                      <span className="font-bold text-xl">{film.title}</span>
+                      <span className="font-bold text-xl">Nr #{film.idNumber}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )

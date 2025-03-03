@@ -2,10 +2,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import FilmoraLogo from './FilmoraLogo';
+import { useAuth } from '@/context/AuthContext';
+import { LogOut } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const Navigation = () => {
   const location = useLocation();
   const path = location.pathname;
+  const { logout } = useAuth();
   
   // Function to determine if a route is active
   const isActive = (route: string) => path === route;
@@ -68,6 +72,25 @@ const Navigation = () => {
               />
             </div>
           </Link>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  onClick={logout}
+                  className="flex flex-col items-center transition-transform duration-200 hover:scale-110 text-white"
+                  aria-label="Logout"
+                >
+                  <div className="w-7 h-7 flex items-center justify-center">
+                    <LogOut size={20} />
+                  </div>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Logout</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </nav>
       </div>
     </div>

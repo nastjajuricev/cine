@@ -43,10 +43,20 @@ const ListViewComponent = ({ films, onFilmUpdated }: ListViewComponentProps) => 
               <div 
                 key={film.id}
                 onClick={() => handleFilmClick(film)}
-                className="flex justify-between items-center p-4 bg-gray-300 rounded-full hover:bg-gray-400 cursor-pointer mx-3 my-3"
+                className="flex items-center p-6 bg-gray-100 rounded-lg hover:bg-gray-200 cursor-pointer mx-3 my-3"
               >
-                <span className="font-bold text-xl">{film.title}</span>
-                <span className="font-bold text-xl">Nr #{film.idNumber}</span>
+                {film.image && (
+                  <img 
+                    src={film.image} 
+                    alt={film.title} 
+                    className="w-16 h-16 object-cover rounded-lg mr-6"
+                  />
+                )}
+                <div className="flex-grow">
+                  <h3 className="font-bold text-xl">{film.title}</h3>
+                  <p className="text-gray-600">{film.director}</p>
+                </div>
+                <span className="font-bold text-lg text-gray-500">#{film.idNumber}</span>
               </div>
             ))}
           </div>

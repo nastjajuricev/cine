@@ -9,7 +9,7 @@ interface GridViewComponentProps {
 
 const GridViewComponent = ({ films, onFilmUpdated }: GridViewComponentProps) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 animate-fade-in">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in">
       {films.map(film => (
         <FilmCard 
           key={film.id} 

@@ -5,7 +5,7 @@ import SearchBar from '@/components/SearchBar';
 import Navigation from '@/components/Navigation';
 import FilmCard from '@/components/FilmCard';
 import { Film, FilterOption } from '@/types/film';
-import { ChevronDown, ArrowLeft } from 'lucide-react';
+import { ChevronDown, ArrowLeft, Filter, Check, ArrowUpAZ } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -21,6 +21,7 @@ const Search = () => {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (initialQuery) {
@@ -51,8 +52,14 @@ const Search = () => {
     performSearch(query);
   };
 
-  const handleFilterChange = (option: FilterOption) => {
-    setFilterBy(option);
+  const handleFilterChange = (option: string) => {
+    const newFilters = new Set(selectedFilters);
+    if (newFilters.has(option)) {
+      newFilters.delete(option);
+    } else {
+      newFilters.add(option);
+    }
+    setSelectedFilters(newFilters);
     setIsFilterDropdownOpen(false);
     if (searchQuery) {
       performSearch(searchQuery);
@@ -84,20 +91,17 @@ const Search = () => {
     }
   };
 
-  const filterOptions: { value: FilterOption; label: string }[] = [
-    { value: 'all', label: 'All Fields' },
+  const filterOptions = [
     { value: 'director', label: 'Director' },
     { value: 'actor', label: 'Actor' },
-    { value: 'producer', label: 'Producer' },
-    { value: 'idNumber', label: 'ID Number' },
     { value: 'genre', label: 'Genre' },
     { value: 'year', label: 'Year' },
-    { value: 'tags', label: 'Tags' },
   ];
 
   const sortOptions = [
-    { value: 'title', label: 'Title (A-Z)' },
-    { value: 'year', label: 'Year' },
+    { value: 'title', label: 'Alphabetically (A-Z)' },
+    { value: 'director', label: 'By Director' },
+    { value: 'genre', label: 'By Genre' },
   ];
 
   return (
@@ -122,56 +126,69 @@ const Search = () => {
 
       {searchQuery && (
         <div className="flex flex-wrap gap-3 mb-6 animate-slide-up">
-          <div className="relative inline-block">
-            <button
-              onClick={toggleFilterDropdown}
-              className="flex items-center space-x-2 text-sm font-medium text-gray-700 border px-3 py-2 rounded-full hover:bg-gray-50"
-            >
-              <span>Filter: {filterOptions.find(option => option.value === filterBy)?.label}</span>
-              <ChevronDown className="w-4 h-4" />
-            </button>
-            
-            {isFilterDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 py-1 border">
-                {filterOptions.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleFilterChange(option.value)}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                      filterBy === option.value ? 'font-medium text-filmora-coral' : 'text-gray-700'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+          <div className="grid grid-cols-3 gap-3 w-full">
+            <div className="col-span-2">
+              <div className="relative inline-block w-full">
+                <button
+                  onClick={toggleFilterDropdown}
+                  className="flex items-center justify-between w-full space-x-2 text-sm font-medium text-gray-700 border px-3 py-2 rounded-full hover:bg-gray-50"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Filter className="w-4 h-4" />
+                    <span>Filter: {selectedFilters.size > 0 ? `${selectedFilters.size} selected` : 'All'}</span>
+                  </div>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                
+                {isFilterDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 py-1 border">
+                    {filterOptions.map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleFilterChange(option.value)}
+                        className={`flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                          selectedFilters.has(option.value) ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                        }`}
+                      >
+                        <span className="flex-grow">{option.label}</span>
+                        {selectedFilters.has(option.value) && (
+                          <Check className="w-4 h-4 text-filmora-coral" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="relative inline-block">
-            <button
-              onClick={toggleSortDropdown}
-              className="flex items-center space-x-2 text-sm font-medium text-gray-700 border px-3 py-2 rounded-full hover:bg-gray-50"
-            >
-              <span>Sort: {sortOptions.find(option => option.value === sortBy)?.label}</span>
-              <ChevronDown className="w-4 h-4" />
-            </button>
-            
-            {isSortDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 py-1 border">
-                {sortOptions.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleSortChange(option.value as 'title' | 'year')}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                      sortBy === option.value ? 'font-medium text-filmora-coral' : 'text-gray-700'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="relative inline-block w-full">
+              <button
+                onClick={toggleSortDropdown}
+                className="flex items-center justify-between w-full space-x-2 text-sm font-medium text-gray-700 border px-3 py-2 rounded-full hover:bg-gray-50"
+              >
+                <div className="flex items-center space-x-2">
+                  <ArrowUpAZ className="w-4 h-4" />
+                  <span>Sort: {sortOptions.find(option => option.value === sortBy)?.label}</span>
+                </div>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              
+              {isSortDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 py-1 border">
+                  {sortOptions.map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleSortChange(option.value as 'title' | 'year')}
+                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                        sortBy === option.value ? 'font-medium text-filmora-coral' : 'text-gray-700'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { ChevronDown, X, Filter, SlidersHorizontal } from 'lucide-react';
+import { ChevronDown, X, Filter, SlidersHorizontal, Grid, List } from 'lucide-react';
 import { Film, SortOption, FilterOption } from '@/types/film';
 import { toast } from 'sonner';
 import SearchBar from '@/components/SearchBar';
@@ -182,17 +181,17 @@ const FilterComponent = ({
         />
       </div>
       
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="relative inline-block">
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="relative">
           <button
             onClick={toggleFilterOptions}
-            className={`flex items-center space-x-2 text-sm font-bold border px-3 py-2 rounded-[10px] hover:bg-gray-50 ${
+            className={`flex items-center space-x-2 text-sm font-bold border px-3 py-2 rounded-[10px] hover:bg-gray-50 w-full ${
               selectedYear || selectedDirector || selectedActor ? 'text-filmora-coral border-filmora-coral' : 'text-gray-700 border-gray-300'
             }`}
           >
             <Filter className="w-4 h-4" />
             <span>Advanced Filters</span>
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className="w-4 h-4 ml-auto" />
           </button>
           
           {isFilterOptionsOpen && (
@@ -301,15 +300,15 @@ const FilterComponent = ({
         </div>
 
         {allCategories.length > 0 && (
-          <div className="relative inline-block">
+          <div className="relative">
             <button
               onClick={toggleCategoryDropdown}
-              className={`flex items-center space-x-2 text-sm font-bold border px-3 py-2 rounded-[10px] hover:bg-gray-50 ${
+              className={`flex items-center space-x-2 text-sm font-bold border px-3 py-2 rounded-[10px] hover:bg-gray-50 w-full ${
                 selectedCategory ? 'text-filmora-coral border-filmora-coral' : 'text-gray-700 border-gray-300'
               }`}
             >
               <span>Category: {selectedCategory || 'All'}</span>
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-4 h-4 ml-auto" />
             </button>
             
             {isCategoryDropdownOpen && (
@@ -339,14 +338,14 @@ const FilterComponent = ({
         )}
 
         {films.length > 0 && (
-          <div className="relative inline-block">
+          <div className="relative">
             <button
               onClick={toggleDropdown}
-              className="flex items-center space-x-2 text-sm font-bold text-gray-700 border border-gray-300 px-3 py-2 rounded-[10px] hover:bg-gray-50"
+              className="flex items-center space-x-2 text-sm font-bold text-gray-700 border border-gray-300 px-3 py-2 rounded-[10px] hover:bg-gray-50 w-full"
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span>Sort: {sortOptions.find(option => option.value === sortBy)?.label}</span>
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-4 h-4 ml-auto" />
             </button>
             
             {isDropdownOpen && (
@@ -366,12 +365,24 @@ const FilterComponent = ({
             )}
           </div>
         )}
-        
+      </div>
+      
+      <div className="flex flex-wrap gap-3 mb-6">
         <button
           onClick={toggleViewMode}
           className="flex items-center space-x-2 text-sm font-bold text-gray-700 border border-gray-300 px-3 py-2 rounded-[10px] hover:bg-gray-50"
         >
-          <span>View: {viewMode === 'grid' ? 'Grid' : 'List'}</span>
+          {viewMode === 'grid' ? (
+            <>
+              <Grid className="w-4 h-4" />
+              <span>View: Grid</span>
+            </>
+          ) : (
+            <>
+              <List className="w-4 h-4" />
+              <span>View: List</span>
+            </>
+          )}
         </button>
         
         {isFiltering && (
@@ -427,23 +438,6 @@ const FilterComponent = ({
               </button>
             </div>
           )}
-        </div>
-      )}
-
-      {viewMode === 'list' && (
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <button className="bg-white text-black font-bold py-4 px-6 rounded-full border border-black text-xl">
-            Alphabetically
-          </button>
-          <button className="bg-black text-white font-bold py-4 px-6 rounded-full text-xl">
-            By Director
-          </button>
-          <button className="bg-black text-white font-bold py-4 px-6 rounded-full text-xl">
-            By Actor
-          </button>
-          <button className="bg-black text-white font-bold py-4 px-6 rounded-full text-xl">
-            By Genre
-          </button>
         </div>
       )}
     </>

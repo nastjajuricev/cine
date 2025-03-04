@@ -67,8 +67,6 @@ const Library = () => {
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">Welcome {userName}</h1>
-        
         <FilterComponent
           films={films}
           searchTerm={searchTerm}

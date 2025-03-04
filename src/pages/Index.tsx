@@ -9,11 +9,13 @@ import { Film, SearchHistory } from '@/types/film';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 const Index = () => {
   const [recentFilms, setRecentFilms] = useState<Film[]>([]);
   const [recentSearches, setRecentSearches] = useState<SearchHistory[]>([]);
   const navigate = useNavigate();
+  const { userName } = useAuth();
   
   const [canScrollLeftFilms, setCanScrollLeftFilms] = useState(false);
   const [canScrollRightFilms, setCanScrollRightFilms] = useState(false);
@@ -102,6 +104,8 @@ const Index = () => {
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
       <div className="animate-fade-in">
+        <h1 className="text-2xl font-bold mb-6">Welcome {userName}</h1>
+        
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Link 
             to="/add-film" 

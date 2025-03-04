@@ -1,6 +1,5 @@
 
 import { Film } from '@/types/film';
-import FilmCard from '@/components/FilmCard';
 import { useState } from 'react';
 import FilmModal from '@/components/FilmModal';
 
@@ -44,7 +43,7 @@ const ListViewComponent = ({ films, onFilmUpdated }: ListViewComponentProps) => 
               <div 
                 key={film.id}
                 onClick={() => handleFilmClick(film)}
-                className="flex justify-between items-center p-4 bg-gray-300 rounded-full hover:bg-gray-400 cursor-pointer mx-1 my-1" // Added padding with mx-1 my-1
+                className="flex justify-between items-center p-4 bg-gray-300 rounded-full hover:bg-gray-400 cursor-pointer mx-3 my-3"
               >
                 <span className="font-bold text-xl">{film.title}</span>
                 <span className="font-bold text-xl">Nr #{film.idNumber}</span>

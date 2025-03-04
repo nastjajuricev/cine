@@ -5,6 +5,7 @@ import { Film } from '@/types/film';
 import { updateFilm, deleteFilm } from '@/lib/storage';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface FilmModalProps {
   film: Film;
@@ -89,37 +90,48 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
         className="modal-content max-w-md max-h-[90vh] w-[90%] overflow-y-auto overflow-x-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {isEditing ? (
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setIsEditing(false)}
-              className="flex items-center text-gray-600 hover:text-black"
-            >
-              <ArrowLeft className="w-5 h-5 mr-1" />
-              <span>Cancel</span>
-            </button>
-            
-            <button
-              onClick={handleSave}
-              className="flex items-center text-filmora-coral font-medium hover:opacity-80"
-            >
-              <Save className="w-5 h-5 mr-1" />
-              <span>Save</span>
-            </button>
-          </div>
-        ) : (
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={onClose}
-              className="rounded-full p-2 bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        )}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 bg-gray-100 hover:bg-gray-200 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-        {/* Image */}
-        <div className="aspect-square relative rounded-xl overflow-hidden mb-5 bg-gray-100">
+        {/* Title - Now moved above image */}
+        <div className="mb-4 min-w-full">
+          {isEditing ? (
+            <input
+              type="text"
+              name="title"
+              value={editedFilm.title}
+              onChange={handleInputChange}
+              placeholder="Film Title"
+              className="w-full text-2xl font-bold p-2 border-b focus:outline-none focus:border-filmora-coral"
+            />
+          ) : (
+            <h2 className="text-2xl font-bold">{film.title}</h2>
+          )}
+          <div className="flex items-center">
+            <span className="text-gray-500 mr-2">ID:</span>
+            {isEditing ? (
+              <input
+                type="text"
+                name="idNumber"
+                value={editedFilm.idNumber}
+                onChange={handleInputChange}
+                placeholder="ID Number"
+                className="p-1 border-b focus:outline-none focus:border-filmora-coral"
+              />
+            ) : (
+              <span>{film.idNumber}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Image - compressed slightly */}
+        <div className="aspect-video relative rounded-xl overflow-hidden mb-5 bg-gray-100">
           {isEditing ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
               {editedFilm.image && !imageError ? (
@@ -180,59 +192,28 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
             </>
           )}
         </div>
-
-        {/* Scrollable content container */}
-        <div className="overflow-x-auto">
-          {/* Title and ID */}
-          <div className="mb-5 min-w-full">
+        
+        {/* Details section - 2 column grid, only populated entries */}
+        <div className="grid grid-cols-2 gap-4 mb-6 min-w-full">
+          {/* Director - Always show as it's required */}
+          <div>
+            <label className="block text-gray-500 text-sm mb-1">Director</label>
             {isEditing ? (
               <input
                 type="text"
-                name="title"
-                value={editedFilm.title}
+                name="director"
+                value={editedFilm.director}
                 onChange={handleInputChange}
-                placeholder="Film Title"
-                className="w-full text-2xl font-bold mb-2 p-2 border-b focus:outline-none focus:border-filmora-coral"
+                placeholder="Director"
+                className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
               />
             ) : (
-              <h2 className="text-2xl font-bold mb-2">{film.title}</h2>
+              <p className="break-words">{film.director}</p>
             )}
-            
-            <div className="flex items-center">
-              <span className="text-gray-500 mr-2">ID:</span>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="idNumber"
-                  value={editedFilm.idNumber}
-                  onChange={handleInputChange}
-                  placeholder="ID Number"
-                  className="p-1 border-b focus:outline-none focus:border-filmora-coral"
-                />
-              ) : (
-                <span>{film.idNumber}</span>
-              )}
-            </div>
           </div>
 
-          {/* Details */}
-          <div className="space-y-4 mb-6 min-w-full">
-            <div>
-              <label className="block text-gray-500 text-sm mb-1">Director</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="director"
-                  value={editedFilm.director}
-                  onChange={handleInputChange}
-                  placeholder="Director"
-                  className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
-                />
-              ) : (
-                <p className="break-words">{film.director}</p>
-              )}
-            </div>
-
+          {/* Year - Only show if present or editing */}
+          {(isEditing || film.year) && (
             <div>
               <label className="block text-gray-500 text-sm mb-1">Year</label>
               {isEditing ? (
@@ -245,10 +226,13 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
                   className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
                 />
               ) : (
-                <p>{film.year || 'Not specified'}</p>
+                <p>{film.year}</p>
               )}
             </div>
+          )}
 
+          {/* Producer - Only show if present or editing */}
+          {(isEditing || film.producer) && (
             <div>
               <label className="block text-gray-500 text-sm mb-1">Producer</label>
               {isEditing ? (
@@ -261,10 +245,13 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
                   className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
                 />
               ) : (
-                <p className="break-words">{film.producer || 'Not specified'}</p>
+                <p className="break-words">{film.producer}</p>
               )}
             </div>
+          )}
 
+          {/* Actors - Only show if present or editing */}
+          {(isEditing || (film.actors && film.actors.length > 0)) && (
             <div>
               <label className="block text-gray-500 text-sm mb-1">Actors</label>
               {isEditing ? (
@@ -276,10 +263,13 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
                   className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
                 />
               ) : (
-                <p className="break-words">{film.actors?.join(', ') || 'Not specified'}</p>
+                <p className="break-words">{film.actors?.join(', ')}</p>
               )}
             </div>
+          )}
 
+          {/* Genres - Only show if present or editing */}
+          {(isEditing || (film.genre && film.genre.length > 0)) && (
             <div>
               <label className="block text-gray-500 text-sm mb-1">Genres</label>
               {isEditing ? (
@@ -291,11 +281,14 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
                   className="w-full p-2 border rounded focus:outline-none focus:border-filmora-coral"
                 />
               ) : (
-                <p className="break-words">{film.genre?.join(', ') || 'Not specified'}</p>
+                <p className="break-words">{film.genre?.join(', ')}</p>
               )}
             </div>
+          )}
 
-            <div>
+          {/* Tags - Only show if present or editing */}
+          {(isEditing || (film.tags && film.tags.length > 0)) && (
+            <div className="col-span-2">
               <label className="block text-gray-500 text-sm mb-1">Tags</label>
               {isEditing ? (
                 <input
@@ -314,40 +307,54 @@ const FilmModal = ({ film, isOpen, onClose, onFilmUpdated }: FilmModalProps) => 
                     >
                       {tag}
                     </span>
-                  )) || 'No tags'}
+                  ))}
                 </div>
               )}
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Action Buttons */}
-        {!isEditing && (
-          <div className="flex justify-between mt-6">
+        {/* Action Buttons - Equal width without icons */}
+        {!isEditing ? (
+          <div className="grid grid-cols-2 gap-4 mt-6">
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center justify-center bg-filmora-black text-white rounded-full px-4 py-2 hover:bg-opacity-80 transition-colors"
+              className="bg-filmora-black text-white rounded-full py-2 text-center hover:bg-opacity-80 transition-colors"
             >
-              <Edit className="w-4 h-4 mr-2" />
               Edit
             </button>
 
             {confirmDelete ? (
               <button
                 onClick={handleDelete}
-                className="flex items-center justify-center bg-red-500 text-white rounded-full px-4 py-2 hover:bg-opacity-80 transition-colors"
+                className="bg-red-500 text-white rounded-full py-2 text-center hover:bg-opacity-80 transition-colors"
               >
                 Confirm Delete
               </button>
             ) : (
               <button
                 onClick={handleDelete}
-                className="flex items-center justify-center bg-gray-200 text-gray-700 rounded-full px-4 py-2 hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 text-gray-700 rounded-full py-2 text-center hover:bg-gray-300 transition-colors"
               >
-                <Trash className="w-4 h-4 mr-2" />
                 Delete
               </button>
             )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            <button
+              onClick={() => setIsEditing(false)}
+              className="bg-gray-200 text-gray-700 rounded-full py-2 text-center hover:bg-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
+            
+            <button
+              onClick={handleSave}
+              className="bg-filmora-coral text-white rounded-full py-2 text-center hover:bg-opacity-80 transition-colors"
+            >
+              Save
+            </button>
           </div>
         )}
       </div>

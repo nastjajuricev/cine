@@ -1,4 +1,12 @@
 import { Film, SearchHistory } from '@/types/film';
+import { 
+  isDropboxConfigured, 
+  saveFilmsToDropbox, 
+  loadFilmsFromDropbox,
+  saveSearchHistoryToDropbox,
+  loadSearchHistoryFromDropbox
+} from './dropboxStorage';
+import { toast } from 'sonner';
 
 // Maximum number of search history items to keep
 const MAX_SEARCH_HISTORY = 5;
@@ -9,8 +17,36 @@ const MAX_RECENT_FILMS = 5;
 const FILMS_STORAGE_KEY = 'filmora-films';
 const SEARCH_HISTORY_KEY = 'filmora-search-history';
 
-// Get all films from localStorage
-export const getFilms = (): Film[] => {
+// Flag to indicate if data is being synced with Dropbox
+let isSyncing = false;
+
+// Get all films from storage (localStorage or Dropbox)
+export const getFilms = async (): Promise<Film[]> => {
+  try {
+    // Check if Dropbox is configured and we're not already syncing
+    if (isDropboxConfigured() && !isSyncing) {
+      isSyncing = true;
+      const dropboxFilms = await loadFilmsFromDropbox();
+      isSyncing = false;
+      
+      if (dropboxFilms) {
+        // Update localStorage with Dropbox data
+        localStorage.setItem(FILMS_STORAGE_KEY, JSON.stringify(dropboxFilms));
+        return dropboxFilms;
+      }
+    }
+    
+    // Fall back to localStorage
+    const films = localStorage.getItem(FILMS_STORAGE_KEY);
+    return films ? JSON.parse(films) : [];
+  } catch (error) {
+    console.error('Error retrieving films:', error);
+    return [];
+  }
+};
+
+// Helper function for backwards compatibility with synchronous code
+export const getFilmsSync = (): Film[] => {
   try {
     const films = localStorage.getItem(FILMS_STORAGE_KEY);
     return films ? JSON.parse(films) : [];
@@ -20,10 +56,39 @@ export const getFilms = (): Film[] => {
   }
 };
 
-// Save all films to localStorage
-export const saveFilms = (films: Film[]): void => {
+// Save all films to storage (localStorage and Dropbox if configured)
+export const saveFilms = async (films: Film[]): Promise<void> => {
+  try {
+    // Always save to localStorage first
+    localStorage.setItem(FILMS_STORAGE_KEY, JSON.stringify(films));
+    
+    // If Dropbox is configured, save there too
+    if (isDropboxConfigured() && !isSyncing) {
+      isSyncing = true;
+      const success = await saveFilmsToDropbox(films);
+      isSyncing = false;
+      
+      if (!success) {
+        toast.error('Failed to sync with Dropbox. Changes saved locally only.');
+      }
+    }
+  } catch (error) {
+    console.error('Error saving films:', error);
+    toast.error('Error saving films. Please try again.');
+  }
+};
+
+// Helper function for backwards compatibility with synchronous code
+export const saveFilmsSync = (films: Film[]): void => {
   try {
     localStorage.setItem(FILMS_STORAGE_KEY, JSON.stringify(films));
+    
+    // If Dropbox is configured, trigger async save
+    if (isDropboxConfigured()) {
+      saveFilmsToDropbox(films).catch(err => {
+        console.error('Error saving films to Dropbox:', err);
+      });
+    }
   } catch (error) {
     console.error('Error saving films to localStorage:', error);
   }
@@ -31,38 +96,52 @@ export const saveFilms = (films: Film[]): void => {
 
 // Add a new film
 export const addFilm = (film: Film): void => {
-  const films = getFilms();
+  const films = getFilmsSync();
   films.push(film);
-  saveFilms(films);
+  saveFilmsSync(films);
 };
 
 // Update an existing film
 export const updateFilm = (updatedFilm: Film): void => {
-  const films = getFilms();
+  const films = getFilmsSync();
   const index = films.findIndex(film => film.id === updatedFilm.id);
   
   if (index !== -1) {
     films[index] = updatedFilm;
-    saveFilms(films);
+    saveFilmsSync(films);
   }
 };
 
 // Delete a film by id
 export const deleteFilm = (id: string): void => {
-  const films = getFilms();
+  const films = getFilmsSync();
   const filteredFilms = films.filter(film => film.id !== id);
-  saveFilms(filteredFilms);
+  saveFilmsSync(filteredFilms);
 };
 
 // Get a film by id
 export const getFilmById = (id: string): Film | undefined => {
-  const films = getFilms();
+  const films = getFilmsSync();
   return films.find(film => film.id === id);
 };
 
-// Get search history
-export const getSearchHistory = (): SearchHistory[] => {
+// Get search history from storage (localStorage or Dropbox)
+export const getSearchHistory = async (): Promise<SearchHistory[]> => {
   try {
+    // Check if Dropbox is configured and we're not already syncing
+    if (isDropboxConfigured() && !isSyncing) {
+      isSyncing = true;
+      const dropboxHistory = await loadSearchHistoryFromDropbox();
+      isSyncing = false;
+      
+      if (dropboxHistory) {
+        // Update localStorage with Dropbox data
+        localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(dropboxHistory));
+        return dropboxHistory;
+      }
+    }
+    
+    // Fall back to localStorage
     const history = localStorage.getItem(SEARCH_HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   } catch (error) {
@@ -71,18 +150,58 @@ export const getSearchHistory = (): SearchHistory[] => {
   }
 };
 
-// Save search history
-export const saveSearchHistory = (history: SearchHistory[]): void => {
+// Helper function for backwards compatibility with synchronous code
+export const getSearchHistorySync = (): SearchHistory[] => {
   try {
+    const history = localStorage.getItem(SEARCH_HISTORY_KEY);
+    return history ? JSON.parse(history) : [];
+  } catch (error) {
+    console.error('Error retrieving search history from localStorage:', error);
+    return [];
+  }
+};
+
+// Save search history to storage (localStorage and Dropbox if configured)
+export const saveSearchHistory = async (history: SearchHistory[]): Promise<void> => {
+  try {
+    // Always save to localStorage first
     localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+    
+    // If Dropbox is configured, save there too
+    if (isDropboxConfigured() && !isSyncing) {
+      isSyncing = true;
+      const success = await saveSearchHistoryToDropbox(history);
+      isSyncing = false;
+      
+      if (!success) {
+        // Silent failure for search history
+        console.error('Failed to sync search history with Dropbox');
+      }
+    }
   } catch (error) {
     console.error('Error saving search history:', error);
   }
 };
 
+// Helper function for backwards compatibility with synchronous code
+export const saveSearchHistorySync = (history: SearchHistory[]): void => {
+  try {
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+    
+    // If Dropbox is configured, trigger async save
+    if (isDropboxConfigured()) {
+      saveSearchHistoryToDropbox(history).catch(err => {
+        console.error('Error saving search history to Dropbox:', err);
+      });
+    }
+  } catch (error) {
+    console.error('Error saving search history to localStorage:', error);
+  }
+};
+
 // Add a new search history item
 export const addSearchHistoryItem = (term: string, resultCount: number): void => {
-  const history = getSearchHistory();
+  const history = getSearchHistorySync();
   
   // Create new history item
   const newItem: SearchHistory = {
@@ -103,12 +222,12 @@ export const addSearchHistoryItem = (term: string, resultCount: number): void =>
     filteredHistory.length = MAX_SEARCH_HISTORY;
   }
   
-  saveSearchHistory(filteredHistory);
+  saveSearchHistorySync(filteredHistory);
 };
 
 // Get recently added films
 export const getRecentlyAddedFilms = (): Film[] => {
-  const films = getFilms();
+  const films = getFilmsSync();
   return [...films]
     .sort((a, b) => b.createdAt - a.createdAt)
     .slice(0, MAX_RECENT_FILMS);
@@ -116,7 +235,7 @@ export const getRecentlyAddedFilms = (): Film[] => {
 
 // Check if a film ID number already exists
 export const isIdNumberExists = (idNumber: string, excludeFilmId?: string): boolean => {
-  const films = getFilms();
+  const films = getFilmsSync();
   return films.some(film => 
     film.idNumber === idNumber && (!excludeFilmId || film.id !== excludeFilmId)
   );
@@ -130,7 +249,7 @@ export const searchFilms = (
 ): Film[] => {
   if (!query.trim()) return [];
   
-  const films = getFilms();
+  const films = getFilmsSync();
   const searchTerm = query.toLowerCase();
   
   // Filter films based on the selected filter

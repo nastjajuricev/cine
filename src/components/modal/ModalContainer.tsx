@@ -12,15 +12,19 @@ const ModalContainer = ({ isOpen, onClose, children }: ModalContainerProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in"
+      onClick={onClose}
+    >
       <div 
-        className="modal-content max-w-md max-h-[90vh] w-[90%] overflow-y-auto overflow-x-auto"
+        className="bg-white rounded-3xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-end mb-4">
           <button
             onClick={onClose}
-            className="rounded-full p-2 bg-gray-100 hover:bg-gray-200 transition-colors"
+            className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>

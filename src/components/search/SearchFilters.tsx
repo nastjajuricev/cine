@@ -1,15 +1,17 @@
+
 import { useState } from 'react';
 import { Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SortOption } from '@/types/film';
 
 interface SearchFiltersProps {
-  filter: string;
-  sortBy: string;
+  selectedFilters: Set<string>;
+  sortBy: SortOption;
   onFilterChange: (filter: string) => void;
-  onSortByChange: (sortBy: string) => void;
+  onSortChange: (sortBy: SortOption) => void;
 }
 
-const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: SearchFiltersProps) => {
+const SearchFilters = ({ selectedFilters, sortBy, onFilterChange, onSortChange }: SearchFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleFilters = () => {
@@ -60,7 +62,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('all')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'all' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('all') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -71,7 +73,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('director')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'director' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('director') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -82,7 +84,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('actor')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'actor' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('actor') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -93,7 +95,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('producer')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'producer' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('producer') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -104,7 +106,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('idNumber')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'idNumber' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('idNumber') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -115,7 +117,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('genre')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'genre' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('genre') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -126,7 +128,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('year')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'year' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('year') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -137,7 +139,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             onClick={() => onFilterChange('tags')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
-              filter === 'tags' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
+              selectedFilters.has('tags') ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
             )}
             role="menuitem"
             tabIndex={-1}
@@ -148,7 +150,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
           {/* Sort By options */}
           <hr className="border-gray-200 my-1" />
           <button
-            onClick={() => onSortByChange('title')}
+            onClick={() => onSortChange('title')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
               sortBy === 'title' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
@@ -159,7 +161,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             Sort by Title
           </button>
           <button
-            onClick={() => onSortByChange('director')}
+            onClick={() => onSortChange('director')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
               sortBy === 'director' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
@@ -170,7 +172,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             Sort by Director
           </button>
           <button
-            onClick={() => onSortByChange('year')}
+            onClick={() => onSortChange('year')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
               sortBy === 'year' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'
@@ -181,7 +183,7 @@ const SearchFilters = ({ filter, sortBy, onFilterChange, onSortByChange }: Searc
             Sort by Year
           </button>
           <button
-            onClick={() => onSortByChange('idNumber')}
+            onClick={() => onSortChange('idNumber')}
             className={cn(
               "text-gray-700 block w-full px-4 py-2 text-left text-sm",
               sortBy === 'idNumber' ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-100 hover:text-gray-900'

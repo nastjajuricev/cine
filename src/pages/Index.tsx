@@ -1,12 +1,12 @@
+
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import { Film } from '@/types/film';
 import FilmCard from '@/components/FilmCard';
-import SearchBar from '@/components/search/SearchBar';
 import { getRecentlyAddedFilms, getSearchHistory, addSearchHistoryItem, searchFilms } from '@/lib/storage';
-import SearchHistoryComponent from '@/components/search/SearchHistoryComponent';
 import { toast } from 'sonner';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
+import SearchBar from '@/components/SearchBar';
+import SearchHistoryComponent from '@/components/search/SearchHistoryComponent';
 
 const Index = () => {
   const [films, setFilms] = useState<Film[]>([]);
@@ -14,9 +14,9 @@ const Index = () => {
   const [searchResults, setSearchResults] = useState<Film[]>([]);
   const [searchHistory, setSearchHistory] = useState<any[]>([]);
   const [searchFilter, setSearchFilter] = useState('all');
-	const [sortBy, setSortBy] = useState('title');
+  const [sortBy, setSortBy] = useState('title');
   const [recentlyAdded, setRecentlyAdded] = useState<Film[]>([]);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadSearchHistory = async () => {
@@ -35,7 +35,7 @@ const Index = () => {
   const handleSearch = (term: string, filter: string, sortBy: string) => {
     setSearchTerm(term);
     setSearchFilter(filter);
-		setSortBy(sortBy);
+    setSortBy(sortBy);
     
     if (term.trim() === '') {
       setSearchResults([]);
@@ -70,11 +70,6 @@ const Index = () => {
 
   return (
     <>
-      <Head>
-        <title>Filmora</title>
-        <meta name="description" content="Manage your film library" />
-      </Head>
-
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Welcome to Filmora</h1>
 
@@ -101,7 +96,7 @@ const Index = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Recently Added</h2>
             <button 
-              onClick={() => router.push('/library')}
+              onClick={() => navigate('/library')}
               className="text-filmora-coral hover:underline"
             >
               View All

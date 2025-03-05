@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Film } from '@/types/film';
 import { getFilms, addFilm } from '@/lib/storage';
 import FilmCard from '@/components/FilmCard';
-import AddFilmModal from '@/components/AddFilmModal';
+import FilmModal from '@/components/FilmModal';
 import ListViewComponent from '@/components/library/ListViewComponent';
 import { Button } from '@/components/ui/button';
 
@@ -62,10 +63,11 @@ const Library = () => {
       )}
 
       {/* Add Film Modal */}
-      <AddFilmModal
+      <FilmModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onFilmAdded={handleFilmAdded}
+        isAddMode={true}
       />
     </div>
   );

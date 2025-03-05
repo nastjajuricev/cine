@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchFilms, addSearchHistoryItem } from '@/lib/storage';
 import Navigation from '@/components/Navigation';
-import { Film, FilterOption } from '@/types/film';
+import { Film, FilterOption, SortOption } from '@/types/film';
 import { toast } from 'sonner';
 import SearchHeader from '@/components/search/SearchHeader';
 import SearchFilters from '@/components/search/SearchFilters';
@@ -17,7 +17,7 @@ const Search = () => {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState<Film[]>([]);
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
-  const [sortBy, setSortBy] = useState<'title' | 'year' | 'director' | 'genre'>('title');
+  const [sortBy, setSortBy] = useState<SortOption>('title');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<Set<string>>(new Set());
 
@@ -63,7 +63,7 @@ const Search = () => {
     }
   };
 
-  const handleSortChange = (option: 'title' | 'year' | 'director' | 'genre') => {
+  const handleSortChange = (option: SortOption) => {
     setSortBy(option);
     if (searchQuery) {
       performSearch(searchQuery);

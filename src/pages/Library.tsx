@@ -1,117 +1,72 @@
-
 import { useState, useEffect } from 'react';
-import { getFilms } from '@/lib/storage';
-import Navigation from '@/components/Navigation';
-import { SortOption, FilterOption } from '@/types/film';
-import { toast } from 'sonner';
-import { useAuth } from '@/context/AuthContext';
-import FilterComponent from '@/components/library/FilterComponent';
-import GridViewComponent from '@/components/library/GridViewComponent';
+import { Plus } from 'lucide-react';
+import { Film } from '@/types/film';
+import { getFilms, addFilm } from '@/lib/storage';
+import FilmCard from '@/components/FilmCard';
+import AddFilmModal from '@/components/AddFilmModal';
 import ListViewComponent from '@/components/library/ListViewComponent';
-import EmptyStateComponent from '@/components/library/EmptyStateComponent';
-import { getFilteredAndSortedFilms } from '@/services/FilmListService';
+import { Button } from '@/components/ui/button';
 
 const Library = () => {
-  const [films, setFilms] = useState([]);
-  const [sortBy, setSortBy] = useState<SortOption>('title');
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<string | null>(null);
-  const [selectedDirector, setSelectedDirector] = useState<string | null>(null);
-  const [selectedActor, setSelectedActor] = useState<string | null>(null);
-  const [filterType, setFilterType] = useState<FilterOption>('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const { userName } = useAuth();
+  const [films, setFilms] = useState<Film[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [listView, setListView] = useState(false);
 
   useEffect(() => {
+    const loadFilms = async () => {
+      const loadedFilms = await getFilms();
+      setFilms(loadedFilms);
+    };
+    
     loadFilms();
   }, []);
 
-  const loadFilms = () => {
-    setIsLoading(true);
-    const allFilms = getFilms();
-    setFilms(allFilms);
-    setIsLoading(false);
+  const handleFilmAdded = (newFilm: Film) => {
+    addFilm(newFilm);
+    setFilms(prevFilms => [...prevFilms, newFilm]);
+    setIsAddModalOpen(false);
   };
 
-  const handleRefresh = () => {
-    loadFilms();
-    toast.success('Library refreshed');
+  const handleFilmUpdated = async () => {
+    const updatedFilms = await getFilms();
+    setFilms(updatedFilms);
   };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory(null);
-    setSelectedYear(null);
-    setSelectedDirector(null);
-    setSelectedActor(null);
-    setFilterType('all');
-    toast.success('Filters cleared');
-  };
-
-  const toggleViewMode = () => {
-    setViewMode(viewMode === 'grid' ? 'list' : 'grid');
-  };
-
-  const filteredAndSortedFilms = getFilteredAndSortedFilms(
-    films,
-    searchTerm,
-    selectedCategory,
-    selectedYear,
-    selectedDirector,
-    selectedActor,
-    sortBy
-  );
 
   return (
-    <div className="min-h-screen pb-24 pt-6 px-4 max-w-4xl mx-auto">
-      <div className="mb-6">
-        <FilterComponent
-          films={films}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
-          selectedDirector={selectedDirector}
-          setSelectedDirector={setSelectedDirector}
-          selectedActor={selectedActor}
-          setSelectedActor={setSelectedActor}
-          filterType={filterType}
-          setFilterType={setFilterType}
-          viewMode={viewMode}
-          toggleViewMode={toggleViewMode}
-        />
+    <div className="container mx-auto py-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Film Library</h1>
+        <div>
+          <Button onClick={() => setListView(!listView)}>
+            {listView ? 'Show Grid' : 'Show List'}
+          </Button>
+          <Button onClick={() => setIsAddModalOpen(true)} className="ml-4">
+            <Plus className="mr-2 h-4 w-4" /> Add Film
+          </Button>
+        </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-pulse-soft">Loading your films...</div>
-        </div>
-      ) : filteredAndSortedFilms.length > 0 ? (
-        viewMode === 'grid' ? (
-          <GridViewComponent 
-            films={filteredAndSortedFilms} 
-            onFilmUpdated={handleRefresh} 
-          />
-        ) : (
-          <ListViewComponent 
-            films={filteredAndSortedFilms} 
-            onFilmUpdated={handleRefresh} 
-          />
-        )
+      {/* Film List or Grid View */}
+      {listView ? (
+        <ListViewComponent films={films} onFilmUpdated={handleFilmUpdated} />
       ) : (
-        <EmptyStateComponent 
-          hasFilms={films.length > 0} 
-          clearFilters={clearFilters} 
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {films.map(film => (
+            <FilmCard
+              key={film.id}
+              film={film}
+              onFilmUpdated={handleFilmUpdated}
+            />
+          ))}
+        </div>
       )}
 
-      <Navigation />
+      {/* Add Film Modal */}
+      <AddFilmModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onFilmAdded={handleFilmAdded}
+      />
     </div>
   );
 };
